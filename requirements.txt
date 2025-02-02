@@ -1,0 +1,4 @@
+fastapi
+tinydb
+"uvicorn[standard]"
+jinja2
