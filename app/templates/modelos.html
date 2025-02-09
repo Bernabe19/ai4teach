@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI4Teach</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #185d96;
+        }
+        .logo img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .model-nav {
+            margin-bottom: 30px;
+        }
+        .model-types {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .model-types > li {
+            position: relative;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        .model-types span {
+            color: #185d96;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        .model-types span:hover {
+            color: #3498db;
+        }
+        .model-tasks {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+            list-style-type: none;
+            padding: 0;
+        }
+        .model-types li:hover .model-tasks {
+            display: block;
+        }
+        .model-tasks li a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .model-tasks li a:hover {
+            background-color: #e9e9e9;
+        }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        #search-input {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+        }
+        #search-button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #185d96;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0 5px 5px 0;
+            transition: background-color 0.3s;
+        }
+        #search-button:hover {
+            background-color: #164e7c;
+        }
+        #model-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .model-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 300px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .model-card h2 {
+            margin-top: 0;
+            color: #185d96;
+        }
+        .model-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .model-card button {
+            background-color: #185d96;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .model-card button:hover {
+            background-color: #164e7c;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <!-- <img src="../static/pesa.png" alt="AI4Teach Logo"> -->
+            ai4teach
+        </div>
+        <div class="user-info">
+            <span>{{username}}</span>
+            <!-- <img src="../static/usuario.png" alt="User Avatar"> -->
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="model-nav">
+            <ul class="model-types">
+                <li>
+                    <span>Texto</span>
+                    <ul class="model-tasks">
+                        <li><a href="#">Clasificación</a></li>
+                        <li><a href="#">Generación</a></li>
+                        <li><a href="#">Traducción</a></li>
+                        <li><a href="#">Resumen</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span>Imagen</span>
+                    <ul class="model-tasks">
+                        <li><a href="#">Clasificación</a></li>
+                        <li><a href="#">Generación</a></li>
+                        <li><a href="#">Segmentación</a></li>
+                        <li><a href="#">Detección</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span>Audio</span>
+                    <ul class="model-tasks">
+                        <li><a href="#">Reconocimiento</a></li>
+                        <li><a href="#">Generación</a></li>
+                        <li><a href="#">Transcripción</a></li>
+                        <li><a href="#">Clasificación</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span>Video</span>
+                    <ul class="model-tasks">
+                        <li><a href="#">Clasificación</a></li>
+                        <li><a href="#">Detección</a></li>
+                        <li><a href="#">Seguimiento</a></li>
+                        <li><a href="#">Generación</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Buscar modelo...">
+            <button id="search-button">🔍</button>
+        </div>
+
+        <main id="model-list">
+            <!-- Los modelos se cargarán aquí dinámicamente -->
+        </main>
+    </div>
+
+    <script>
+        // Datos de ejemplo de los modelos
+        const models = [
+            { id: 1, name: 'GPT-3', type: 'text', task: 'generation', description: 'Modelo de lenguaje de gran escala para generación de texto.' },
+            { id: 2, name: 'DALL-E', type: 'image', task: 'generation', description: 'Modelo para generar imágenes a partir de descripciones textuales.' },
+            { id: 3, name: 'Whisper', type: 'audio', task: 'translation', description: 'Modelo de reconocimiento de voz y traducción.' },
+            { id: 4, name: 'BERT', type: 'text', task: 'classification', description: 'Modelo de procesamiento de lenguaje natural para varias tareas.' },
+            { id: 5, name: 'ResNet', type: 'image', task: 'classification', description: 'Red neuronal convolucional para clasificación de imágenes.' }
+        ];
+
+        // Función para renderizar los modelos
+        function renderModels(modelsToRender) {
+            const modelList = document.getElementById('model-list');
+            modelList.innerHTML = '';
+            modelsToRender.forEach(model => {
+                const modelCard = document.createElement('div');
+                modelCard.className = 'model-card';
+                modelCard.innerHTML = `
+                    <h2>${model.name}</h2>
+                    <p>${model.description}</p>
+                    <button onclick="trainModel(${model.id})">Entrenar</button>
+                    <button onclick="selectModel(${model.id})">Seleccionar</button>
+                `;
+                modelList.appendChild(modelCard);
+            });
+        }
+
+        // Función para filtrar modelos
+        function filterModels(searchTerm) {
+            return models.filter(model => 
+                model.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                model.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Evento de búsqueda
+        document.getElementById('search-button').addEventListener('click', function() {
+            const searchTerm = document.getElementById('search-input').value;
+            const filteredModels = filterModels(searchTerm);
+            renderModels(filteredModels);
+        });
+
+        // Funciones para entrenar y seleccionar modelos
+        function trainModel(modelId) {
+            alert(`Iniciando entrenamiento para el modelo ${modelId}`);
+        }
+
+        function selectModel(modelId) {
+            alert(`Modelo ${modelId} seleccionado`);
+        }
+
+        // Renderizar todos los modelos al cargar la página
+        renderModels(models);
+    </script>
+</body>
+</html>

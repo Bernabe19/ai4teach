@@ -1,4 +1,6 @@
 fastapi
+python-multipart
 tinydb
-"uvicorn[standard]"
+uvicorn[standard]
 jinja2
+tensorflow[and-cuda]

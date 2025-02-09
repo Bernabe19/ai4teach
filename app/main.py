@@ -3,6 +3,7 @@
 from fastapi import FastAPI, Request, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from app.routers import models, datasets, users
 from pydantic import BaseModel
 import uvicorn
@@ -21,16 +22,27 @@ templates = Jinja2Templates(directory="templates")
 async def show_login(request: Request):
         return templates.TemplateResponse("login.html", {"request": request})
 
+@app.get("/home", tags=["home"])
+async def get_home(request: Request):
+         username = request.cookies.get("usuario")
+         return templates.TemplateResponse("home.html", {"request": request, "username": username})
+
+@app.get("/modelos", tags=["modelos"])
+async def get_home(request: Request):
+         username = request.cookies.get("usuario")
+         return templates.TemplateResponse("modelos.html", {"request": request, "username": username})
+
 @app.post("/", tags=["login"])
 async def process_login(request: Request, response: Response):
         form = await request.form()
         username = form.get("username")
         password = form.get("password") 
-        if username == "a" and password == "a":
+        if username == "pedro" and password == "a":
+                response = RedirectResponse(url="/home", status_code=303) 
                 response.set_cookie(key="usuario", value=username, httponly=True, secure=True)
-                return templates.TemplateResponse("home.html", {"request": request, "login_failed": False, "username": username})
-        else:
-                return templates.TemplateResponse("login.html", {"request": request, "login_failed": True})
+                return response
+        
+        return templates.TemplateResponse("login.html", {"request": request, "login_failed": True})
 
 if __name__ == "__main__":
     uvicorn.run(

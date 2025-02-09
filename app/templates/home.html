@@ -83,6 +83,10 @@
             height: 60px;
             margin-bottom: 15px;
         }
+        span{
+            color: #185d96;
+            font-size: larger;
+        }
     </style>
 </head>
 <body>
@@ -92,13 +96,13 @@
             ai4teach
         </div>
         <div class="user-info">
-            <img src="/placeholder.svg?height=40&width=40" alt="User Avatar">
-            <span>John Doe</span>
+            <span>{{username}}</span>
+            <!-- <img src="../static/usuario.png" alt="User Avatar"> -->
         </div>
     </header>
     <div class="container">
         <div class="options">
-            <button class="option">
+            <button class="option" onclick="">
                 <img src="../static/descripcion-general.png" alt="Modelos Icon">
                 Modelos
             </button>
