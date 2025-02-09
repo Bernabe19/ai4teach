@@ -1,1 +1,0 @@
-# Instalar nvidia-cuda-toolkit
