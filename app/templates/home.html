@@ -102,7 +102,7 @@
     </header>
     <div class="container">
         <div class="options">
-            <button class="option" onclick="">
+            <button class="option" onclick="redirect('modelos')">
                 <img src="../static/descripcion-general.png" alt="Modelos Icon">
                 Modelos
             </button>
@@ -110,7 +110,7 @@
                 <img src="../static/libro-marcador.png" alt="Contenidos Icon">
                 Contenidos
             </button>
-            <button class="option">
+            <button class="option" onclick="redirect('entrenamiento')">
                 <img src="../static/cerebro.png" alt="Entrenamiento Icon">
                 Entrenamiento
             </button>
@@ -124,6 +124,11 @@
             </button>
         </div>
     </div>
+    <script>
+        function redirect(pagina){
+            window.location.href = pagina;
+        }
+    </script>
 </body>
 </html>
 

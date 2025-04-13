@@ -32,12 +32,17 @@ async def get_home(request: Request):
          username = request.cookies.get("usuario")
          return templates.TemplateResponse("modelos.html", {"request": request, "username": username})
 
+@app.get("/entrenamiento", tags=["entrenamiento"])
+async def get_home(request: Request):
+         username = request.cookies.get("usuario")
+         return templates.TemplateResponse("entrenamiento.html", {"request": request, "username": username})
+
 @app.post("/", tags=["login"])
 async def process_login(request: Request, response: Response):
         form = await request.form()
         username = form.get("username")
         password = form.get("password") 
-        if username == "pedro" and password == "a":
+        if username == "pedro" and password == "pedro":
                 response = RedirectResponse(url="/home", status_code=303) 
                 response.set_cookie(key="usuario", value=username, httponly=True, secure=True)
                 return response
