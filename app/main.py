@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from app.routers import models, datasets, users
 from pydantic import BaseModel
 import uvicorn
@@ -12,6 +13,13 @@ app = FastAPI(title="ai4teach")
 app.include_router(users.router)
 app.include_router(datasets.router)
 app.include_router(models.router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # O especifica tu frontend: ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
@@ -42,7 +50,7 @@ async def process_login(request: Request, response: Response):
         form = await request.form()
         username = form.get("username")
         password = form.get("password") 
-        if username == "pedro" and password == "pedro":
+        if username == "bernabe" and password == "bernabe":
                 response = RedirectResponse(url="/home", status_code=303) 
                 response.set_cookie(key="usuario", value=username, httponly=True, secure=True)
                 return response

@@ -376,7 +376,7 @@
                         <select id="server-dataset" class="form-control">
                             <option value="">-- Seleccione un conjunto de datos --</option>
                             <optgroup label="Imagen">
-                                <option value="coco">MNIST (Clasificación)</option>
+                                <option value="mnist">MNIST (Clasificación)</option>
                                 <option value="imagenet">ImageNet (Clasificación)</option>
                                 <option value="coco">COCO (Detección)</option>
                                 <option value="cifar10">CIFAR-10 (Clasificación)</option>
@@ -425,6 +425,10 @@
                 <div class="form-group">
                     <label>Parámetros de Entrenamiento:</label>
                     <div class="parameters-grid">
+                        <div>
+                            <label for="porcentaje-dataset">Porcentaje del Dataset</label>
+                            <input type="number" id="porcentaje-dataset" class="form-control" value="100" min="1" max="100">
+                        </div>
                         <div>
                             <label for="batch-size">Tamaño de Lote:</label>
                             <input type="number" id="batch-size" class="form-control" value="32" min="1">
@@ -529,6 +533,10 @@
                         <div class="metric-card">
                             <div class="metric-label">Pérdida de Validación</div>
                             <div class="metric-value" id="val-loss">0.000</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Precisión de Pruebas</div>
+                            <div class="metric-value" id="test-accuracy">0.000</div>
                         </div>
                     </div>
                     
@@ -919,6 +927,18 @@
                     content.classList.add('active');
                 }
             });
+            const eventSource = new EventSource("http://localhost:8080/stream-metrics");
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                console.log("Nueva época:", data.epoch);
+                // actualizarGrafico(data); // tu función de renderizado
+            };
+
+            eventSource.onerror = function(err) {
+                console.error("Error en el stream:", err);
+                eventSource.close();
+            };
             
             // Iniciar simulación de entrenamiento
             trainingInProgress = true;
@@ -1207,6 +1227,7 @@
             const format = dataSource === 'upload' ? document.getElementById('dataset-format').value : null;
             const fileInput = document.getElementById('dataset-upload');
             const file = fileInput && fileInput.files.length > 0 ? fileInput.files[0] : null;
+            const porcentajeDataset = document.getElementById('porcentaje-dataset').value;
             const batchSize = document.getElementById('batch-size').value;
             const epochs = document.getElementById('epochs').value;
             const optimizer = document.getElementById('optimizer').value;
@@ -1227,6 +1248,7 @@
             formData.append('dataSource', dataSource);
             formData.append('dataset', dataset || '');
             formData.append('format', format || '');
+            formData.append('porcentajeDataset', porcentajeDataset);
             formData.append('batchSize', batchSize);
             formData.append('epochs', epochs);
             formData.append('optimizer', optimizer);
@@ -1259,6 +1281,7 @@
                 alert('Error al iniciar el entrenamiento');
             }
         }
+        
     </script>
 </body>
 </html>
