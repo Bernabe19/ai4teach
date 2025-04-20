@@ -2,8 +2,7 @@ from fastapi import APIRouter, Form, UploadFile, File, Request
 from fastapi.responses import StreamingResponse, JSONResponse
 from typing import Optional
 import tensorflow as tf
-from tensorflow.keras import layers, models
-from tensorflow.keras import backend as K
+from tensorflow.keras import layers, models, backend as K
 import tensorflow_datasets as tfds
 import time
 import json

@@ -15,7 +15,7 @@ app.include_router(datasets.router)
 app.include_router(models.router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # O especifica tu frontend: ["http://localhost:3000"]
+    allow_origins=["*"],  # O frontend ej: ["http://localhost:3000"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,6 +44,11 @@ async def get_home(request: Request):
 async def get_home(request: Request):
          username = request.cookies.get("usuario")
          return templates.TemplateResponse("entrenamiento.html", {"request": request, "username": username})
+
+@app.get("/datasets", tags=["datasets"])
+async def get_home(request: Request):
+         username = request.cookies.get("usuario")
+         return templates.TemplateResponse("datasets.html", {"request": request, "username": username})
 
 @app.post("/", tags=["login"])
 async def process_login(request: Request, response: Response):

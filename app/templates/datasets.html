@@ -46,10 +46,10 @@
             margin: 40px auto;
             padding: 0 20px;
         }
-        .model-nav {
+        .dataset-nav {
             margin-bottom: 30px;
         }
-        .model-types {
+        .dataset-types {
             list-style-type: none;
             padding: 0;
             margin: 0;
@@ -57,21 +57,21 @@
             justify-content: flex-start;
             flex-wrap: wrap;
         }
-        .model-types > li {
+        .dataset-types > li {
             position: relative;
             margin-right: 20px;
             margin-bottom: 10px;
         }
-        .model-types span {
+        .dataset-types span {
             color: #185d96;
             cursor: pointer;
             font-size: 16px;
             transition: color 0.3s;
         }
-        .model-types span:hover {
+        .dataset-types span:hover {
             color: #3498db;
         }
-        .model-tasks {
+        .dataset-tasks {
             display: none;
             position: absolute;
             background-color: #f9f9f9;
@@ -83,17 +83,17 @@
             list-style-type: none;
             padding: 0;
         }
-        .model-types li:hover .model-tasks {
+        .dataset-types li:hover .dataset-tasks {
             display: block;
         }
-        .model-tasks li a {
+        .dataset-tasks li a {
             color: black;
             padding: 12px 16px;
             text-decoration: none;
             display: block;
             transition: background-color 0.3s;
         }
-        .model-tasks li a:hover {
+        .dataset-tasks li a:hover {
             background-color: #e9e9e9;
         }
         .search-container {
@@ -121,13 +121,13 @@
         #search-button:hover {
             background-color: #164e7c;
         }
-        #model-list {
+        #dataset-list {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
         }
-        .model-card {
+        .dataset-card {
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -135,19 +135,19 @@
             width: 300px;
             transition: transform 0.3s, box-shadow 0.3s;
         }
-        .model-card:hover {
+        .dataset-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        .model-card h2 {
+        .dataset-card h2 {
             margin-top: 0;
             color: #185d96;
         }
-        .model-card p {
+        .dataset-card p {
             color: #666;
             margin-bottom: 20px;
         }
-        .model-card button {
+        .dataset-card button {
             background-color: #185d96;
             color: white;
             border: none;
@@ -158,7 +158,7 @@
             border-radius: 5px;
             transition: background-color 0.3s;
         }
-        .model-card button:hover {
+        .dataset-card button:hover {
             background-color: #164e7c;
         }
     </style>
@@ -176,11 +176,11 @@
     </header>
 
     <div class="container">
-        <nav class="model-nav">
-            <ul class="model-types">
+        <nav class="dataset-nav">
+            <ul class="dataset-types">
                 <li>
                     <span onclick="onClickSpan(type='text')">Texto</span>
-                    <ul class="model-tasks">
+                    <ul class="dataset-tasks">
                         <li><a onclick="onClickTypeAndTask('text', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('text', 'generation')" href="#">Generación</a></li>
                         <li><a onclick="onClickTypeAndTask('text', 'translation')" href="#">Traducción</a></li>
@@ -189,7 +189,7 @@
                 </li>
                 <li>
                     <span onclick="onClickSpan(type='image')">Imagen</span>
-                    <ul class="model-tasks">
+                    <ul class="dataset-tasks">
                         <li><a onclick="onClickTypeAndTask('image', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('image', 'generation')" href="#">Generación</a></li>
                         <li><a onclick="onClickTypeAndTask('image', 'segmentation')" href="#">Segmentación</a></li>
@@ -198,7 +198,7 @@
                 </li>
                 <li>
                     <span onclick="onClickSpan(type='audio')">Audio</span>
-                    <ul class="model-tasks">
+                    <ul class="dataset-tasks">
                         <li><a onclick="onClickTypeAndTask('audio', 'recognition')" href="#">Reconocimiento</a></li>
                         <li><a onclick="onClickTypeAndTask('audio', 'generation')" href="#">Generación</a></li>
                         <li><a onclick="onClickTypeAndTask('audio', 'transcription')" href="#">Transcripción</a></li>
@@ -207,7 +207,7 @@
                 </li>
                 <li>
                     <span onclick="onClickSpan(type='video')">Video</span>
-                    <ul class="model-tasks">
+                    <ul class="dataset-tasks">
                         <li><a onclick="onClickTypeAndTask('video', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('video', 'detection')" href="#">Detección</a></li>
                         <li><a onclick="onClickTypeAndTask('video', 'tracking')" href="#">Seguimiento</a></li>
@@ -215,8 +215,8 @@
                     </ul>
                 </li>
                 <li>
-                    <span onclick="renderModels(models)">Todos</span>
-                    <ul class="model-tasks">
+                    <span onclick="renderDatasets(datasets)">Todos</span>
+                    <ul class="dataset-tasks">
                         <li><a onclick="onClickSpan(task='classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickSpan(task='generation')" href="#">Generación</a></li>
                         <li><a onclick="onClickSpan(task='translation')" href="#">Traducción</a></li>
@@ -227,131 +227,126 @@
                         <li><a onclick="onClickSpan(task='recognition')" href="#">Reconocimiento</a></li>
                         <li><a onclick="onClickSpan(task='transcription')" href="#">Transcripción</a></li>
                     </ul>
-                    <!--Permitir seleccionar los modelos por task-->
+                    <!--Permitir seleccionar los datasetos por task-->
                 </li>
             </ul>
         </nav>
         
         <div class="search-container">
-            <input type="text" id="search-input" placeholder="Buscar modelo...">
+            <input type="text" id="search-input" placeholder="Buscar dataset...">
             <button id="search-button">🔍</button>
         </div>
 
-        <main id="model-list">
+        <main id="dataset-list">
             <!-- Los modelos se cargarán aquí dinámicamente -->
         </main>
     </div>
 
     <script>
         // Datos de ejemplo de los modelos
-        const models = [
+        const datasets = [
             // TEXT
-            { id: 1, name: 'GPT-3', type: 'text', task: 'generation', description: 'Modelo de lenguaje de gran escala para generación de texto.' },
-            { id: 2, name: 'BERT', type: 'text', task: 'classification', description: 'Modelo de procesamiento de lenguaje natural para clasificación y otras tareas.' },
-            { id: 3, name: 'T5', type: 'text', task: 'translation', description: 'Modelo de texto a texto que puede realizar traducción, resumen y más.' },
-            { id: 4, name: 'Pegasus', type: 'text', task: 'summary', description: 'Modelo especializado en generar resúmenes automáticos de textos largos.' },
-            { id: 5, name: 'RoBERTa', type: 'text', task: 'classification', description: 'Modelo robusto optimizado a partir de BERT para tareas de clasificación.' },
-            { id: 6, name: 'XLNet', type: 'text', task: 'generation', description: 'Modelo de lenguaje autoregresivo que mejora la generación de texto.' },
-            { id: 7, name: 'MarianMT', type: 'text', task: 'translation', description: 'Modelo multilingüe de traducción entrenado por Facebook AI.' },
-            { id: 8, name: 'Bart', type: 'text', task: 'summary', description: 'Modelo encoder-decoder versátil, eficaz para resúmenes y generación.' },
+            { id: 1, name: 'IMDB Reviews', type: 'text', task: 'classification', description: 'Dataset de reseñas de películas etiquetadas como positivas o negativas.' },
+            { id: 2, name: 'Common Crawl', type: 'text', task: 'generation', description: 'Gran recopilación de datos web utilizada para entrenar modelos de lenguaje.' },
+            { id: 3, name: 'WMT14 EN-DE', type: 'text', task: 'translation', description: 'Conjunto de datos para tareas de traducción automática del inglés al alemán.' },
+            { id: 4, name: 'CNN/DailyMail', type: 'text', task: 'summary', description: 'Dataset con noticias y resúmenes utilizados para entrenar modelos de resumen.' },
+            { id: 5, name: 'AG News', type: 'text', task: 'classification', description: 'Colección de artículos periodísticos categorizados en temas como negocios, ciencia, deportes y tecnología.' },
 
             // IMAGE
-            { id: 9, name: 'DALL-E', type: 'image', task: 'generation', description: 'Modelo para generar imágenes a partir de descripciones textuales.' },
-            { id: 10, name: 'ResNet', type: 'image', task: 'classification', description: 'Red neuronal convolucional para clasificación de imágenes.' },
-            { id: 11, name: 'YOLOv5', type: 'image', task: 'detection', description: 'Modelo de detección en tiempo real de objetos en imágenes.' },
-            { id: 12, name: 'U-Net', type: 'image', task: 'segmentation', description: 'Modelo ampliamente utilizado para segmentación semántica de imágenes.' },
-            { id: 13, name: 'StyleGAN2', type: 'image', task: 'generation', description: 'Modelo generativo de imágenes realistas, especialmente rostros humanos.' },
-            { id: 14, name: 'EfficientNet', type: 'image', task: 'classification', description: 'Modelo eficiente y preciso para clasificación de imágenes.' },
-            { id: 15, name: 'Mask R-CNN', type: 'image', task: 'segmentation', description: 'Modelo que combina detección de objetos con segmentación precisa.' },
-            { id: 16, name: 'Faster R-CNN', type: 'image', task: 'detection', description: 'Modelo de detección de objetos preciso y popular en visión por computador.' },
+            { id: 6, name: 'CIFAR-10', type: 'image', task: 'classification', description: 'Pequeño dataset con 60,000 imágenes divididas en 10 clases comunes.' },
+            { id: 7, name: 'ImageNet', type: 'image', task: 'classification', description: 'Extenso dataset con millones de imágenes etiquetadas en miles de categorías.' },
+            { id: 8, name: 'COCO', type: 'image', task: 'detection', description: 'Dataset con imágenes anotadas para detección de objetos, segmentación y captioning.' },
+            { id: 9, name: 'Cityscapes', type: 'image', task: 'segmentation', description: 'Imágenes urbanas etiquetadas píxel a píxel para segmentación semántica.' },
+            { id: 10, name: 'LSUN', type: 'image', task: 'generation', description: 'Gran colección de escenas utilizadas para tareas de generación y clasificación de imágenes.' },
+            { id: 11, name: 'ADE20K', type: 'image', task: 'segmentation', description: 'Dataset con anotaciones exhaustivas para segmentación de escenas complejas.' },
 
             // AUDIO
-            { id: 17, name: 'Whisper', type: 'audio', task: 'transcription', description: 'Modelo de OpenAI para transcripción automática y multilingüe de audio.' },
-            { id: 18, name: 'WaveNet', type: 'audio', task: 'generation', description: 'Modelo generativo para síntesis de voz realista.' },
-            { id: 19, name: 'DeepSpeech', type: 'audio', task: 'recognition', description: 'Sistema de reconocimiento automático de voz desarrollado por Mozilla.' },
-            { id: 20, name: 'YAMNet', type: 'audio', task: 'classification', description: 'Modelo basado en MobileNet para clasificar sonidos ambientales.' },
-            { id: 21, name: 'Jukebox', type: 'audio', task: 'generation', description: 'Modelo generativo de OpenAI para creación de música con voz y letra.' },
-            { id: 22, name: 'HuBERT', type: 'audio', task: 'transcription', description: 'Modelo auto-supervisado para extracción de características de voz.' },
+            { id: 12, name: 'LibriSpeech', type: 'audio', task: 'transcription', description: 'Corpus de audio basado en audiolibros de dominio público para reconocimiento de voz.' },
+            { id: 13, name: 'ESC-50', type: 'audio', task: 'classification', description: 'Colección de grabaciones ambientales clasificadas en categorías como animales, naturaleza o humanos.' },
+            { id: 14, name: 'VCTK', type: 'audio', task: 'generation', description: 'Dataset con grabaciones de múltiples hablantes para síntesis de voz y entrenamiento TTS.' },
+            { id: 15, name: 'TED-LIUM', type: 'audio', task: 'transcription', description: 'Conjunto de charlas TED con transcripciones alineadas para reconocimiento de voz.' },
+            { id: 16, name: 'FSD50K', type: 'audio', task: 'recognition', description: 'Gran conjunto de datos con sonidos etiquetados para tareas de clasificación y detección.' },
 
             // VIDEO
-            { id: 23, name: 'SlowFast', type: 'video', task: 'classification', description: 'Modelo que procesa diferentes frecuencias temporales para analizar vídeos.' },
-            { id: 24, name: 'I3D', type: 'video', task: 'classification', description: 'Modelo inflado 3D para reconocimiento de acciones en vídeos.' },
-            { id: 25, name: 'ST-GCN', type: 'video', task: 'detection', description: 'Modelo basado en grafos para análisis de acciones humanas en vídeos.' },
-            { id: 26, name: 'SiamMask', type: 'video', task: 'tracking', description: 'Modelo eficiente para seguimiento de objetos en vídeos en tiempo real.' },
-            { id: 27, name: 'Vid2Vid', type: 'video', task: 'generation', description: 'Modelo para generación de vídeo a partir de diferentes fuentes visuales.' },
-            { id: 28, name: 'Tracktor', type: 'video', task: 'tracking', description: 'Modelo de seguimiento basado en regresión de bounding boxes desde detecciones previas.' },
-            { id: 29, name: 'RT-DETR', type: 'video', task: 'detection', description: 'Detección de objetos en tiempo real basado en Transformer.' }
+            { id: 17, name: 'UCF101', type: 'video', task: 'classification', description: 'Dataset con 13,000 vídeos categorizados en 101 tipos de acciones humanas.' },
+            { id: 18, name: 'ActivityNet', type: 'video', task: 'classification', description: 'Base de datos extensa con vídeos etiquetados según actividades cotidianas.' },
+            { id: 19, name: 'AVA', type: 'video', task: 'detection', description: 'Dataset anotado con acciones humanas frame por frame en vídeos de películas.' },
+            { id: 20, name: 'OTB100', type: 'video', task: 'tracking', description: 'Benchmark para algoritmos de seguimiento de objetos en vídeos.' },
+            { id: 21, name: 'Kinetics-700', type: 'video', task: 'classification', description: 'Gran conjunto de vídeos con anotaciones sobre tipos de acciones humanas.' },
+            { id: 22, name: 'YouTube-VIS', type: 'video', task: 'detection', description: 'Dataset para segmentación y seguimiento de instancias en vídeos.' },
+            { id: 23, name: 'BAIR Robot Pushing', type: 'video', task: 'generation', description: 'Dataset de vídeo con interacciones robóticas utilizado para entrenar modelos de predicción y generación de vídeo condicional.'}
         ];
 
 
-        // Función para renderizar los modelos
-        function renderModels(modelsToRender) {
-            const modelList = document.getElementById('model-list');
-            modelList.innerHTML = '';
-            modelsToRender.forEach(model => {
-                const modelCard = document.createElement('div');
-                modelCard.className = 'model-card';
-                modelCard.innerHTML = `
-                    <h2>${model.name}</h2>
-                    <p>${model.description}</p>
-                    <button onclick="trainModel(${model.id})">Entrenar</button>
-                    <button onclick="selectModel(${model.id})">Seleccionar</button>
+
+        // Función para renderizar los datasets
+        function renderDatasets(datasets) {
+            const datasetList = document.getElementById('dataset-list');
+            datasetList.innerHTML = '';
+            datasets.forEach(dataset => {
+                const datasetCard = document.createElement('div');
+                datasetCard.className = 'dataset-card';
+                datasetCard.innerHTML = `
+                    <h2>${dataset.name}</h2>
+                    <p>${dataset.description}</p>
+                    <button onclick="trainDataset(${dataset.id})">Entrenar</button>
+                    <button onclick="selectDataset(${dataset.id})">Seleccionar</button>
                 `;
-                modelList.appendChild(modelCard);
+                datasetList.appendChild(datasetCard);
             });
         }
 
         // Función para filtrar modelos
-        function filterModels(searchTerm) {
-            return models.filter(model => 
-                model.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                model.description.toLowerCase().includes(searchTerm.toLowerCase())
+        function filterDatasets(searchTerm) {
+            return datasets.filter(dataset => 
+                dataset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                dataset.description.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
 
         function filterByType(type) {
-            return models.filter(model => model.type === type);
+            return datasets.filter(dataset => dataset.type === type);
         }
         function filterByTask(task) {
-            return models.filter(model => model.task === task);
+            return datasets.filter(dataset => dataset.task === task);
         }
         function filterByTypeAndTask(type, task) {
-            return models.filter(model => model.type === type && model.task === task);
+            return datasets.filter(dataset => dataset.type === type && dataset.task === task);
         }
 
         function onClickSpan(type) {
-            const filteredModels = filterByType(type);
-            renderModels(filteredModels);
+            const filteredDatasets = filterByType(type);
+            renderDatasets(filteredDatasets);
         }
         function onClickSpan(task) {
-            const filteredModels = filterByTask(task);
-            renderModels(filteredModels);
+            const filteredDatasets = filterByTask(task);
+            renderDatasets(filteredDatasets);
         }
 
         function onClickTypeAndTask(type, task) {
-            const filteredModels = filterByTypeAndTask(type, task);
-            renderModels(filteredModels);
+            const filteredDatasets = filterByTypeAndTask(type, task);
+            renderDatasets(filteredDatasets);
         }
 
         // Evento de búsqueda
         document.getElementById('search-button').addEventListener('click', function() {
             const searchTerm = document.getElementById('search-input').value;
-            const filteredModels = filterModels(searchTerm);
-            renderModels(filteredModels);
+            const filteredDatasets = filterDatasets(searchTerm);
+            renderDatasets(filteredDatasets);
         });
 
         // Funciones para entrenar y seleccionar modelos
-        function trainModel(modelId) {
-            alert(`Iniciando entrenamiento para el modelo ${modelId}`);
+        function trainDataset(datasetId) {
+            alert(`Iniciando entrenamiento para el modelo ${datasetId}`);
         }
 
-        function selectModel(modelId) {
-            alert(`Modelo ${modelId} seleccionado`);
+        function selectDataset(datasetId) {
+            alert(`dataset ${datasetId} seleccionado`);
         }
 
         // Renderizar todos los modelos al cargar la página
-        renderModels(models);
+        renderDatasets(datasets);
     </script>
 </body>
 </html>
