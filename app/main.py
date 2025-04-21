@@ -50,6 +50,11 @@ async def get_home(request: Request):
          username = request.cookies.get("usuario")
          return templates.TemplateResponse("datasets.html", {"request": request, "username": username})
 
+@app.get("/contenidos", tags=["contenidos"])
+async def get_home(request: Request):
+         username = request.cookies.get("usuario")
+         return templates.TemplateResponse("contenidos.html", {"request": request, "username": username})
+
 @app.post("/", tags=["login"])
 async def process_login(request: Request, response: Response):
         form = await request.form()

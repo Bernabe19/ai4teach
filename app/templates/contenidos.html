@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción a la Inteligencia Artificial</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --sidebar-bg: #f8f9fa;
+            --main-bg: #ffffff;
+            --text-color: #333333;
+            --sidebar-width: 280px;
+            --header-height: 60px;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--main-bg);
+            color: var(--text-color);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: var(--header-height);
+            z-index: 100;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #185d96;
+        }
+        
+        .logo img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        /* Contenedor principal debajo del header */
+        .container {
+            display: flex;
+            flex: 1;
+            margin-top: var(--header-height);
+        }
+        
+        /* Barra lateral */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid #e0e0e0;
+            height: calc(100vh - var(--header-height));
+            position: fixed;
+            top: var(--header-height);
+            overflow-y: auto;
+            padding: 1rem;
+            transition: var(--transition);
+        }
+        
+        .sidebar-header {
+            padding: 1rem 0;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Barra de búsqueda */
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+        
+        /* Navegación */
+        .nav-menu h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+        
+        .nav-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0.8rem;
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .nav-icon {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1rem 2rem;
+            max-width: calc(100% - var(--sidebar-width));
+            margin-top: var(--header-height);
+        }
+        
+        /* Encabezado */
+        .main-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .intro-quote {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: var(--border-radius);
+        }
+        
+        /* Secciones */
+        .section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 1.6rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title-icon {
+            margin-right: 0.5rem;
+        }
+        
+        /* Tarjetas */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background-color: var(--sidebar-bg);
+        }
+        
+        /* Botón toggle sidebar y menú radial */
+        .sidebar-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            z-index: 100;
+            transition: var(--transition);
+            font-size: 1.5rem;
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .sidebar-toggle.active {
+            background-color: var(--secondary-color);
+            transform: rotate(45deg);
+        }
+        
+        /* Menú radial */
+        .radial-menu {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 300px;
+            height: 300px;
+            pointer-events: none;
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .radial-menu.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+        }
+        
+        .menu-item {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        background-color 0.3s ease;
+            transform: translate(30px, 30px) scale(0);
+            font-size: 1.2rem;
+        }
+        
+        .radial-menu.active .menu-item {
+            transform: translate(0, 0) scale(1);
+        }
+        
+        .menu-item:hover {
+            background-color: var(--secondary-color);
+            /* transform: translate(0, 0) scale(1.1) !important; */
+        }
+        
+        .menu-item-label {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .menu-item:hover .menu-item-label {
+            opacity: 1;
+        }
+        
+        /* Posiciones específicas para cada elemento del menú radial */
+        .menu-item:nth-child(1) {
+            transform: translate(120px, 0) scale(0);
+            transition-delay: 0s;
+        }
+        
+        .menu-item:nth-child(2) {
+            transform: translate(100px, -70px) scale(0);
+            transition-delay: 0.05s;
+        }
+        
+        .menu-item:nth-child(3) {
+            transform: translate(50px, -110px) scale(0);
+            transition-delay: 0.1s;
+        }
+        
+        .menu-item:nth-child(4) {
+            transform: translate(-15px, -120px) scale(0);
+            transition-delay: 0.15s;
+        }
+        
+        .menu-item:nth-child(5) {
+            transform: translate(-80px, -90px) scale(0);
+            transition-delay: 0.2s;
+        }
+        
+        .menu-item:nth-child(6) {
+            transform: translate(-120px, -30px) scale(0);
+            transition-delay: 0.25s;
+        }
+        
+        .menu-item:nth-child(7) {
+            transform: translate(-120px, 40px) scale(0);
+            transition-delay: 0.3s;
+        }
+        
+        .menu-item:nth-child(8) {
+            transform: translate(-70px, 100px) scale(0);
+            transition-delay: 0.35s;
+        }
+        
+        .radial-menu.active .menu-item:nth-child(1) {
+            transform: translate(120px, 0) scale(1);
+        }
+        
+        .radial-menu.active .menu-item:nth-child(2) {
+            transform: translate(100px, -70px) scale(1);
+        }
+        
+        .radial-menu.active .menu-item:nth-child(3) {
+            transform: translate(50px, -110px) scale(1);
+        }
+        
+        .radial-menu.active .menu-item:nth-child(4) {
+            transform: translate(-15px, -120px) scale(1);
+        }
+        
+        .radial-menu.active .menu-item:nth-child(5) {
+            transform: translate(-80px, -90px) scale(1);
+        }
+        
+        .radial-menu.active .menu-item:nth-child(6) {
+            transform: translate(-120px, -30px) scale(1);
+        }
+        
+        .radial-menu.active .menu-item:nth-child(7) {
+            transform: translate(-120px, 40px) scale(1);
+        }
+        
+        .radial-menu.active .menu-item:nth-child(8) {
+            transform: translate(-70px, 100px) scale(1);
+        }
+        
+        /* Modo oscuro y tema */
+        .theme-toggle {
+            margin-top: auto;
+            padding: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-btn {
+            background-color: transparent;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .theme-btn:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 2rem;
+            padding: 1.5rem 0;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            :root {
+                --sidebar-width: 0px;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+                width: 250px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Botón volver arriba */
+        .back-to-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            z-index: 99;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        /* Overlay para cuando el menú radial está activo */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 98;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header añadido -->
+    <header class="header">
+        <div class="logo">
+            <!-- <img src="../static/pesa.png" alt="AI4Teach Logo"> -->
+            ai4teach
+        </div>
+        <div class="user-info">
+            <span>{{username}}</span>
+            <!-- <img src="../static/usuario.png" alt="User Avatar"> -->
+        </div>
+    </header>
+    
+    <!-- Barra lateral -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🧠 IA Learning Hub</div>
+            <p>Recursos educativos sobre IA</p>
+        </div>
+        
+        <!-- Barra de búsqueda -->
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Buscar..." id="searchInput">
+        </div>
+        
+        <!-- Navegación -->
+        <nav class="nav-menu">
+            <h3>Contenidos</h3>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="#que-es-ia" class="nav-link active">
+                        <span class="nav-icon">🔍</span>
+                        ¿Qué es la IA?
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#tipos-ia" class="nav-link">
+                        <span class="nav-icon">🧠</span>
+                        Tipos de IA
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#datos" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Datos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#machine-learning" class="nav-link">
+                        <span class="nav-icon">🧮</span>
+                        Aprendizaje Automático
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#redes-neuronales" class="nav-link">
+                        <span class="nav-icon">🔄</span>
+                        Redes Neuronales
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#deep-learning" class="nav-link">
+                        <span class="nav-icon">🧠</span>
+                        Deep Learning
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#metricas" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Métricas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#etica" class="nav-link">
+                        <span class="nav-icon">⚖️</span>
+                        Ética y Sesgo
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#herramientas" class="nav-link">
+                        <span class="nav-icon">🛠️</span>
+                        Herramientas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#recursos" class="nav-link">
+                        <span class="nav-icon">📚</span>
+                        Recursos adicionales
+                    </a>
+                </li>
+            </ul>
+            
+            <h3>Enlaces Rápidos</h3>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="#ejercicios" class="nav-link">
+                        <span class="nav-icon">✏️</span>
+                        Ejercicios prácticos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#glosario" class="nav-link">
+                        <span class="nav-icon">📖</span>
+                        Glosario de términos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#faq" class="nav-link">
+                        <span class="nav-icon">❓</span>
+                        Preguntas frecuentes
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Tema toggle -->
+        <div class="theme-toggle">
+            <button class="theme-btn" id="themeToggle">
+                🌙 Cambiar tema
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <header class="main-header">
+            <div class="header-title">Introducción a la IA</div>
+            <div class="header-actions">
+                <button id="printBtn">🖨️ Imprimir</button>
+                <button id="shareBtn">📤 Compartir</button>
+            </div>
+        </header>
+        
+        <h1 class="page-title">📘 Introducción a la Inteligencia Artificial</h1>
+        
+        <div class="intro-quote">
+            <p>Esta página está diseñada para guiar al alumnado a través de los principales conceptos de la Inteligencia Artificial de forma estructurada y visual.</p>
+        </div>
+        
+        <!-- Sección: ¿Qué es la IA? -->
+        <section id="que-es-ia" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">🔍</span>
+                ¿Qué es la Inteligencia Artificial?
+            </h2>
+            <p>La IA es el campo de estudio y desarrollo de sistemas capaces de realizar tareas que normalmente requieren inteligencia humana, como el razonamiento, el aprendizaje, la percepción y la toma de decisiones.</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Asistentes virtuales</h3>
+                    <p>Como Siri, Alexa y Google Assistant, que pueden entender y responder a comandos de voz.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Coches autónomos</h3>
+                    <p>Vehículos capaces de navegar sin intervención humana utilizando sensores y algoritmos avanzados.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Diagnósticos médicos</h3>
+                    <p>Sistemas que analizan imágenes médicas para detectar enfermedades con precisión comparable a expertos humanos.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Traducción automática</h3>
+                    <p>Herramientas como Google Translate que pueden traducir textos entre cientos de idiomas.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Tipos de IA -->
+        <section id="tipos-ia" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">🧠</span>
+                Tipos de IA
+            </h2>
+            <p>La inteligencia artificial se puede clasificar según sus capacidades y objetivos:</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">IA débil</h3>
+                    <p>También llamada IA estrecha o ANI (Artificial Narrow Intelligence). Especializada en una sola tarea como jugar ajedrez o reconocer voz.</p>
+                    <p><strong>Ejemplos:</strong> Chatbots, filtros de spam, sistemas de recomendación.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">IA fuerte</h3>
+                    <p>Con capacidades similares o superiores a las del ser humano en diversos campos. Actualmente teórica.</p>
+                    <p><strong>Características:</strong> Autoconciencia, razonamiento general, comprensión contextual.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">IA general</h3>
+                    <p>También conocida como AGI (Artificial General Intelligence). Aún teórica, capaz de aprender cualquier tarea cognitiva.</p>
+                    <p><strong>Objetivo:</strong> Desarrollar sistemas que puedan resolver problemas generales, no solo específicos.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Datos -->
+        <section id="datos" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">📊</span>
+                Datos y conjuntos de datos
+            </h2>
+            <p>Los modelos de IA se entrenan con datos. La calidad, cantidad y diversidad de estos influye significativamente en los resultados obtenidos.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dataset</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Uso común</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CIFAR-10</td>
+                        <td>Imágenes</td>
+                        <td>60,000 imágenes a color (32x32) en 10 categorías</td>
+                        <td>Clasificación de imágenes</td>
+                    </tr>
+                    <tr>
+                        <td>IMDB Reviews</td>
+                        <td>Texto</td>
+                        <td>50,000 reseñas de películas</td>
+                        <td>Análisis de sentimiento</td>
+                    </tr>
+                    <tr>
+                        <td>LibriSpeech</td>
+                        <td>Audio</td>
+                        <td>1,000 horas de lectura en inglés</td>
+                        <td>Reconocimiento de voz</td>
+                    </tr>
+                    <tr>
+                        <td>UCF101</td>
+                        <td>Vídeo</td>
+                        <td>13,320 vídeos de 101 acciones humanas</td>
+                        <td>Reconocimiento de actividad</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <!-- Continuar con las demás secciones... -->
+        <section id="machine-learning" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">🧮</span>
+                Aprendizaje Automático
+            </h2>
+            <p>Subcampo de la IA que consiste en diseñar algoritmos que pueden aprender de los datos y mejorar su rendimiento en tareas específicas.</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Supervisado</h3>
+                    <p>El algoritmo aprende de datos etiquetados (entrada + resultado esperado).</p>
+                    <p><strong>Ejemplos:</strong> Clasificación de spam, reconocimiento de objetos.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">No supervisado</h3>
+                    <p>El algoritmo identifica patrones en datos no etiquetados.</p>
+                    <p><strong>Ejemplos:</strong> Segmentación de clientes, detección de anomalías.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Por refuerzo</h3>
+                    <p>El algoritmo aprende mediante prueba y error, recibiendo recompensas o penalizaciones.</p>
+                    <p><strong>Ejemplos:</strong> Juegos, robots, sistemas de conducción autónoma.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Más secciones... -->
+        <section id="redes-neuronales" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">🔄</span>
+                Redes Neuronales
+            </h2>
+            <p>Inspiradas en el cerebro humano, consisten en capas de nodos (neuronas) que procesan la información para aprender representaciones complejas.</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Perceptrón</h3>
+                    <p>La forma más básica de red neuronal, con una sola capa de neuronas.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">CNN</h3>
+                    <p>Redes Neuronales Convolucionales, especializadas en procesar datos con estructura de cuadrícula (imágenes).</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">RNN</h3>
+                    <p>Redes Recurrentes, diseñadas para datos secuenciales como texto o series temporales.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Transformers</h3>
+                    <p>Arquitectura avanzada basada en mecanismos de atención, utilizada en modelos de lenguaje como GPT y BERT.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Continuar con las demás secciones como las anteriores -->
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <p>✍️ Este contenido está diseñado para adaptarse al currículo de PIAR I, II y el Curso de Especialización en IA y Big Data.</p>
+            <p>© 2025 - Recursos Educativos sobre Inteligencia Artificial</p>
+        </footer>
+    </main>
+    
+    <!-- Menú radial -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <div class="radial-menu" id="radialMenu">
+        <div class="menu-item" data-section="que-es-ia">
+            🔍
+            <span class="menu-item-label">¿Qué es la IA?</span>
+        </div>
+        <div class="menu-item" data-section="tipos-ia">
+            🧠
+            <span class="menu-item-label">Tipos de IA</span>
+        </div>
+        <div class="menu-item" data-section="datos">
+            📊
+            <span class="menu-item-label">Datos</span>
+        </div>
+        <div class="menu-item" data-section="machine-learning">
+            🧮
+            <span class="menu-item-label">Machine Learning</span>
+        </div>
+        <div class="menu-item" data-section="redes-neuronales">
+            🔄
+            <span class="menu-item-label">Redes Neuronales</span>
+        </div>
+        <div class="menu-item" data-section="deep-learning">
+            🧠
+            <span class="menu-item-label">Deep Learning</span>
+        </div>
+        <div class="menu-item" data-section="etica">
+            ⚖️
+            <span class="menu-item-label">Ética y Sesgo</span>
+        </div>
+        <div class="menu-item" data-section="recursos">
+            📚
+            <span class="menu-item-label">Recursos</span>
+        </div>
+    </div>
+    
+    <!-- Botón toggle sidebar (visible en móvil) -->
+    <div class="sidebar-toggle" id="sidebarToggle">
+        ☰
+    </div>
+    
+    <!-- Botón volver arriba -->
+    <div class="back-to-top" id="backToTop" style="display: none;">
+        ↑
+    </div>
+    
+    <script>
+        // Toggle sidebar en móvil
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            // Alternar entre mostrar la barra lateral y el menú radial
+            const radialMenu = document.getElementById('radialMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            this.classList.toggle('active');
+            radialMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            
+            // Si estamos en móvil, también toggle la sidebar
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.toggle('active');
+            }
+        });
+        
+        // Cerrar el menú radial al hacer clic en el overlay
+        document.getElementById('menuOverlay').addEventListener('click', function() {
+            this.classList.remove('active');
+            document.getElementById('radialMenu').classList.remove('active');
+            document.getElementById('sidebarToggle').classList.remove('active');
+        });
+        
+        // Navegación desde el menú radial
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const sectionId = this.getAttribute('data-section');
+                const targetElement = document.getElementById(sectionId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Cerrar el menú radial
+                    document.getElementById('radialMenu').classList.remove('active');
+                    document.getElementById('menuOverlay').classList.remove('active');
+                    document.getElementById('sidebarToggle').classList.remove('active');
+                }
+            });
+        });
+        
+        // Toggle tema claro/oscuro
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                this.innerHTML = '☀️ Cambiar tema';
+                document.documentElement.style.setProperty('--main-bg', '#1a1a2e');
+                document.documentElement.style.setProperty('--sidebar-bg', '#16213e');
+                document.documentElement.style.setProperty('--text-color', '#e1e1e1');
+            } else {
+                this.innerHTML = '🌙 Cambiar tema';
+                document.documentElement.style.setProperty('--main-bg', '#ffffff');
+                document.documentElement.style.setProperty('--sidebar-bg', '#f8f9fa');
+                document.documentElement.style.setProperty('--text-color', '#333333');
+            }
+        });
+        
+        // Buscar en contenido
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const sections = document.querySelectorAll('.section');
+            
+            sections.forEach(section => {
+                const sectionText = section.textContent.toLowerCase();
+                if (sectionText.includes(searchTerm)) {
+                    section.style.display = 'block';
+                    // Resaltar coincidencias (opcional)
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+        
+        // Destacar link activo al hacer scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Mostrar/ocultar botón volver arriba
+            if (window.pageYOffset > 300) {
+                document.getElementById('backToTop').style.display = 'flex';
+            } else {
+                document.getElementById('backToTop').style.display = 'none';
+            }
+        });
+        
+        // Función volver arriba
+        document.getElementById('backToTop').addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Print functionality
+        document.getElementById('printBtn').addEventListener('click', function() {
+            window.print();
+        });
+        
+        // Share functionality (básico)
+        document.getElementById('shareBtn').addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Introducción a la Inteligencia Artificial',
+                    text: 'Recurso educativo sobre IA',
+                    url: window.location.href
+                });
+            } else {
+                alert('Función de compartir no disponible en este navegador');
+            }
+        });
+        
+        // Smooth scrolling para links internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+                
+                // Cerrar sidebar en móvil al hacer clic
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
