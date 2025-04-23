@@ -110,9 +110,9 @@ def prepare_datasets():
     val_sample = int(len(val_data) * (last_training_config["porcentajeDataset"] / 100))
     test_sample = int(len(test_data) * (last_training_config["porcentajeDataset"] / 100))
     
-    train_data = train_data.take(train_sample)
-    val_data = val_data.take(val_sample)
-    test_data = test_data.take(test_sample)
+    train_data = train_data.take(train_sample).cache()
+    val_data = val_data.take(val_sample).cache()
+    test_data = test_data.take(test_sample).cache()
 
     # Preprocesamiento
     train_data = train_data.map(preprocess_resnet)

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel ="icon" type="image/png" href="../static/cerebro.png">
+    <link rel="icon" type="image/png" href="../static/cerebro.png">
     <title>Introducción a la Inteligencia Artificial</title>
     <style>
         :root {
@@ -557,6 +557,59 @@
             opacity: 1;
             visibility: visible;
         }
+
+        /* Estilos para el glosario */
+        .glossary-term {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 1rem;
+        }
+
+        .glossary-definition {
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+        }
+
+        /* Estilos para FAQ */
+        .faq-question {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+
+        .faq-answer {
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+            padding-top: 0.5rem;
+        }
+
+        /* Estilos para ejercicios */
+        .exercise {
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .exercise-title {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .exercise-description {
+            margin-bottom: 1rem;
+        }
+
+        .exercise-steps {
+            padding-left: 1.5rem;
+        }
+
+        .exercise-steps li {
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -564,7 +617,7 @@
     <header class="header">
         <div class="logo">
             <!-- <img src="../static/pesa.png" alt="AI4Teach Logo"> -->
-            ai4teach
+            <a style="text-decoration: none; color: inherit;" href="home">AI4Teach</a>
         </div>
         <div class="user-info">
             <span>{{username}}</span>
@@ -684,13 +737,13 @@
     
     <!-- Contenido principal -->
     <main class="main-content">
-        <header class="main-header">
+        <!-- <header class="main-header">
             <div class="header-title">Introducción a la IA</div>
             <div class="header-actions">
                 <button id="printBtn">🖨️ Imprimir</button>
                 <button id="shareBtn">📤 Compartir</button>
             </div>
-        </header>
+        </header> -->
         
         <h1 class="page-title">📘 Introducción a la Inteligencia Artificial</h1>
         
@@ -854,7 +907,310 @@
             </div>
         </section>
         
-        <!-- Continuar con las demás secciones como las anteriores -->
+        <!-- Sección: Deep Learning -->
+        <section id="deep-learning" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">🧠</span>
+                Deep Learning
+            </h2>
+            <p>Subcampo del Machine Learning que utiliza redes neuronales con múltiples capas (profundas) para modelar abstracciones de alto nivel en los datos.</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Fundamentos</h3>
+                    <p>Basado en redes neuronales artificiales con múltiples capas ocultas que permiten aprender representaciones jerárquicas.</p>
+                    <p><strong>Características:</strong> Aprendizaje de características automático, gran capacidad de generalización.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Frameworks</h3>
+                    <p>Bibliotecas y herramientas que facilitan la implementación de modelos de Deep Learning.</p>
+                    <p><strong>Ejemplos:</strong> TensorFlow, PyTorch, Keras, JAX.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Aplicaciones</h3>
+                    <p>Campos donde el Deep Learning ha mostrado resultados excepcionales.</p>
+                    <p><strong>Ejemplos:</strong> Visión por computador, procesamiento de lenguaje natural, generación de contenido.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Desafíos</h3>
+                    <p>Limitaciones y retos actuales en el campo del Deep Learning.</p>
+                    <p><strong>Ejemplos:</strong> Necesidad de grandes cantidades de datos, coste computacional, interpretabilidad.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Métricas -->
+        <section id="metricas" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">📈</span>
+                Métricas de Evaluación
+            </h2>
+            <p>Para evaluar el rendimiento de los modelos de IA, se utilizan diferentes métricas según el tipo de problema y los objetivos.</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Precisión y Recall</h3>
+                    <p><strong>Precisión:</strong> Proporción de predicciones positivas correctas entre todas las predicciones positivas.</p>
+                    <p><strong>Recall:</strong> Proporción de predicciones positivas correctas entre todos los casos realmente positivos.</p>
+                    <p><strong>Uso:</strong> Problemas de clasificación donde el equilibrio entre falsos positivos y falsos negativos es importante.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">F1-Score</h3>
+                    <p>Media armónica entre precisión y recall, proporcionando un balance entre ambas métricas.</p>
+                    <p><strong>Fórmula:</strong> F1 = 2 * (Precisión * Recall) / (Precisión + Recall)</p>
+                    <p><strong>Uso:</strong> Cuando se busca un equilibrio entre precisión y exhaustividad.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">ROC y AUC</h3>
+                    <p><strong>ROC:</strong> Curva que muestra el rendimiento de un modelo de clasificación a diferentes umbrales.</p>
+                    <p><strong>AUC:</strong> Área bajo la curva ROC, que cuantifica la capacidad del modelo para distinguir entre clases.</p>
+                    <p><strong>Uso:</strong> Evaluación general de modelos de clasificación binaria.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Error Cuadrático Medio</h3>
+                    <p>Promedio de las diferencias al cuadrado entre los valores predichos y los valores reales.</p>
+                    <p><strong>Uso:</strong> Problemas de regresión donde se predice un valor numérico continuo.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Ética y Sesgo -->
+        <section id="etica" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">⚖️</span>
+                Ética y Sesgo en IA
+            </h2>
+            <p>La implementación de sistemas de IA plantea importantes cuestiones éticas y desafíos relacionados con los sesgos algorítmicos.</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Sesgos en IA</h3>
+                    <p>Los algoritmos pueden perpetuar o amplificar sesgos presentes en los datos de entrenamiento.</p>
+                    <p><strong>Ejemplos:</strong> Discriminación en sistemas de contratación, sesgos raciales en reconocimiento facial.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Privacidad</h3>
+                    <p>Los sistemas de IA a menudo requieren grandes cantidades de datos personales para su entrenamiento y funcionamiento.</p>
+                    <p><strong>Desafíos:</strong> Consentimiento informado, derecho al olvido, minimización de datos.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Transparencia</h3>
+                    <p>La complejidad de muchos sistemas de IA dificulta entender cómo toman decisiones.</p>
+                    <p><strong>Soluciones:</strong> IA explicable (XAI), auditorías algorítmicas, documentación de modelos.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Impacto social</h3>
+                    <p>La automatización mediante IA puede tener profundos efectos en el empleo y la estructura social.</p>
+                    <p><strong>Consideraciones:</strong> Redistribución de beneficios, recualificación laboral, acceso equitativo.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Herramientas -->
+        <section id="herramientas" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">🛠️</span>
+                Herramientas para IA
+            </h2>
+            <p>Existen numerosas herramientas y plataformas que facilitan el desarrollo e implementación de soluciones basadas en IA.</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Bibliotecas Python</h3>
+                    <p>Frameworks y bibliotecas para implementar algoritmos de IA en Python.</p>
+                    <p><strong>Ejemplos:</strong> Scikit-learn, TensorFlow, PyTorch, Keras, Pandas, NumPy.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Plataformas Cloud</h3>
+                    <p>Servicios en la nube que ofrecen capacidades de IA como APIs o entornos de desarrollo.</p>
+                    <p><strong>Ejemplos:</strong> Google Cloud AI, AWS SageMaker, Azure AI, IBM Watson.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Herramientas de Visualización</h3>
+                    <p>Soluciones para visualizar datos y resultados de modelos de IA.</p>
+                    <p><strong>Ejemplos:</strong> Matplotlib, Seaborn, Plotly, Tableau, PowerBI.</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Entornos de Desarrollo</h3>
+                    <p>IDEs y notebooks que facilitan el desarrollo de proyectos de IA.</p>
+                    <p><strong>Ejemplos:</strong> Jupyter Notebook, Google Colab, VS Code, PyCharm.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Recursos adicionales -->
+        <section id="recursos" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">📚</span>
+                Recursos Adicionales
+            </h2>
+            <p>Una selección de recursos para profundizar en el aprendizaje sobre inteligencia artificial.</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Libros</h3>
+                    <p>Lecturas recomendadas para diferentes niveles de conocimiento.</p>
+                    <ul>
+                        <li><strong>Principiantes:</strong> "Inteligencia Artificial: Un enfoque moderno" - Stuart Russell y Peter Norvig</li>
+                        <li><strong>Intermedios:</strong> "Deep Learning" - Ian Goodfellow, Yoshua Bengio y Aaron Courville</li>
+                        <li><strong>Avanzados:</strong> "Pattern Recognition and Machine Learning" - Christopher Bishop</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Cursos Online</h3>
+                    <p>Formación estructurada disponible en plataformas educativas.</p>
+                    <ul>
+                        <li>Machine Learning - Stanford (Coursera)</li>
+                        <li>Deep Learning Specialization - deeplearning.ai</li>
+                        <li>Fast.ai - Practical Deep Learning for Coders</li>
+                        <li>Elements of AI - Universidad de Helsinki</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Comunidades</h3>
+                    <p>Espacios para compartir conocimientos y resolver dudas.</p>
+                    <ul>
+                        <li>Kaggle - Competiciones y datasets</li>
+                        <li>Stack Overflow - Preguntas y respuestas</li>
+                        <li>GitHub - Repositorios de código abierto</li>
+                        <li>Reddit - Subreddits r/MachineLearning, r/artificial</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Blogs y Newsletters</h3>
+                    <p>Fuentes de información actualizada sobre avances en IA.</p>
+                    <ul>
+                        <li>The Gradient</li>
+                        <li>Import AI</li>
+                        <li>AI Weekly</li>
+                        <li>Distill.pub</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Ejercicios prácticos -->
+        <section id="ejercicios" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">✏️</span>
+                Ejercicios Prácticos
+            </h2>
+            <p>Actividades para poner en práctica los conceptos aprendidos sobre inteligencia artificial.</p>
+            
+            <div class="exercise">
+                <h3 class="exercise-title">Ejercicio 1: Clasificación de imágenes con TensorFlow</h3>
+                <p class="exercise-description">Crear un modelo básico para clasificar imágenes del dataset MNIST (dígitos escritos a mano).</p>
+                <ol class="exercise-steps">
+                    <li>Instalar TensorFlow y cargar el dataset MNIST</li>
+                    <li>Preprocesar los datos (normalización, división en conjuntos de entrenamiento y prueba)</li>
+                    <li>Crear una red neuronal convolucional simple</li>
+                    <li>Entrenar el modelo y evaluar su rendimiento</li>
+                    <li>Visualizar algunas predicciones</li>
+                </ol>
+            </div>
+            
+            <div class="exercise">
+                <h3 class="exercise-title">Ejercicio 2: Análisis de sentimiento con NLTK</h3>
+                <p class="exercise-description">Desarrollar un clasificador de sentimiento para reseñas de películas.</p>
+                <ol class="exercise-steps">
+                    <li>Instalar NLTK y descargar el dataset de reseñas de películas</li>
+                    <li>Preprocesar el texto (tokenización, eliminación de stopwords, etc.)</li>
+                    <li>Extraer características (bag of words, TF-IDF)</li>
+                    <li>Entrenar un clasificador (Naive Bayes, SVM)</li>
+                    <li>Evaluar el rendimiento y analizar errores</li>
+                </ol>
+            </div>
+            
+            <div class="exercise">
+                <h3 class="exercise-title">Ejercicio 3: Generación de texto con GPT</h3>
+                <p class="exercise-description">Utilizar un modelo preentrenado para generar texto creativo.</p>
+                <ol class="exercise-steps">
+                    <li>Configurar el acceso a la API de OpenAI o utilizar Hugging Face Transformers</li>
+                    <li>Experimentar con diferentes prompts y parámetros</li>
+                    <li>Implementar una aplicación simple que genere texto basado en entradas del usuario</li>
+                    <li>Analizar las fortalezas y limitaciones del modelo</li>
+                </ol>
+            </div>
+        </section>
+        
+        <!-- Sección: Glosario de términos -->
+        <section id="glosario" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">📖</span>
+                Glosario de Términos
+            </h2>
+            <p>Definiciones de los conceptos clave en el campo de la inteligencia artificial.</p>
+            
+            <div class="glossary-term">Algoritmo</div>
+            <div class="glossary-definition">Conjunto de reglas o instrucciones definidas que permiten solucionar un problema o realizar una tarea específica.</div>
+            
+            <div class="glossary-term">Backpropagation</div>
+            <div class="glossary-definition">Algoritmo utilizado para entrenar redes neuronales, que ajusta los pesos de las conexiones propagando el error desde la salida hacia atrás.</div>
+            
+            <div class="glossary-term">Clasificación</div>
+            <div class="glossary-definition">Tarea de aprendizaje automático que consiste en asignar una categoría o etiqueta a un dato de entrada.</div>
+            
+            <div class="glossary-term">Dataset</div>
+            <div class="glossary-definition">Conjunto de datos estructurado utilizado para entrenar y evaluar modelos de aprendizaje automático.</div>
+            
+            <div class="glossary-term">Embedding</div>
+            <div class="glossary-definition">Representación de datos en un espacio vectorial de menor dimensión, preservando relaciones semánticas o estructurales.</div>
+            
+            <div class="glossary-term">Feature (Característica)</div>
+            <div class="glossary-definition">Variable o atributo medible que describe un fenómeno y se utiliza como entrada para un modelo de aprendizaje automático.</div>
+            
+            <div class="glossary-term">Gradient Descent</div>
+            <div class="glossary-definition">Algoritmo de optimización que ajusta iterativamente los parámetros de un modelo para minimizar una función de pérdida.</div>
+            
+            <div class="glossary-term">Hiperparámetro</div>
+            <div class="glossary-definition">Parámetro cuyo valor se establece antes del proceso de entrenamiento, a diferencia de los parámetros que se aprenden durante el entrenamiento.</div>
+            
+            <div class="glossary-term">Inferencia</div>
+            <div class="glossary-definition">Proceso de utilizar un modelo entrenado para hacer predicciones sobre nuevos datos.</div>
+            
+            <div class="glossary-term">Overfitting (Sobreajuste)</div>
+            <div class="glossary-definition">Situación en la que un modelo aprende demasiado de los datos de entrenamiento, incluyendo el ruido, lo que reduce su capacidad de generalización.</div>
+            
+            <div class="glossary-term">Regularización</div>
+            <div class="glossary-definition">Técnica para prevenir el sobreajuste añadiendo una penalización a la complejidad del modelo.</div>
+            
+            <div class="glossary-term">Tensor</div>
+            <div class="glossary-definition">Generalización multidimensional de vectores y matrices, estructura de datos fundamental en bibliotecas como TensorFlow y PyTorch.</div>
+        </section>
+        
+        <!-- Sección: Preguntas frecuentes -->
+        <section id="faq" class="section fade-in">
+            <h2 class="section-title">
+                <span class="section-title-icon">❓</span>
+                Preguntas Frecuentes
+            </h2>
+            <p>Respuestas a las dudas más comunes sobre inteligencia artificial.</p>
+            
+            <div class="faq-question">¿Cuál es la diferencia entre IA, Machine Learning y Deep Learning?</div>
+            <div class="faq-answer">
+                <p>La IA es el campo amplio que busca crear sistemas capaces de realizar tareas que requieren inteligencia humana. El Machine Learning es un subcampo de la IA que se centra en algoritmos que aprenden de los datos. El Deep Learning es un subcampo del Machine Learning que utiliza redes neuronales con múltiples capas para aprender representaciones complejas.</p>
+            </div>
+            
+            <div class="faq-question">¿Qué formación necesito para trabajar en IA?</div>
+            <div class="faq-answer">
+                <p>Una base sólida en matemáticas (álgebra lineal, cálculo, probabilidad y estadística) y programación (especialmente Python) es fundamental. Dependiendo del rol específico, pueden ser relevantes conocimientos en ciencia de datos, ingeniería de software, o campos de aplicación específicos como visión por computador o procesamiento de lenguaje natural.</p>
+            </div>
+            
+            <div class="faq-question">¿Pueden las máquinas ser realmente inteligentes o solo simulan inteligencia?</div>
+            <div class="faq-answer">
+                <p>Esta es una pregunta filosófica con diferentes perspectivas. Algunos argumentan que los sistemas actuales solo simulan inteligencia mediante patrones estadísticos, mientras que otros consideran que ciertas formas de IA ya exhiben aspectos genuinos de inteligencia en dominios específicos. La distinción entre "simular" y "ser" inteligente es un tema de debate continuo.</p>
+            </div>
+            
+            <div class="faq-question">¿Qué cantidad de datos se necesita para entrenar un modelo de IA?</div>
+            <div class="faq-answer">
+                <p>Depende de la complejidad del problema y del tipo de modelo. Algunos algoritmos simples pueden funcionar bien con cientos o miles de ejemplos, mientras que los modelos de deep learning modernos pueden requerir millones o incluso miles de millones de datos para alcanzar un rendimiento óptimo. Las técnicas de transfer learning y few-shot learning están reduciendo estos requisitos en algunos casos.</p>
+            </div>
+            
+            <div class="faq-question">¿Cómo puedo empezar a aprender sobre IA sin experiencia previa?</div>
+            <div class="faq-answer">
+                <p>Comienza con cursos introductorios como "Elements of AI" o "AI for Everyone". Aprende los fundamentos de programación en Python y conceptos básicos de estadística. Practica con tutoriales y proyectos pequeños utilizando bibliotecas como scikit-learn. Gradualmente, avanza hacia frameworks más complejos como TensorFlow o PyTorch. La sección de recursos de esta página ofrece más recomendaciones específicas.</p>
+            </div>
+        </section>
         
         <!-- Footer -->
         <footer class="footer">
@@ -1026,12 +1382,12 @@
         });
         
         // Print functionality
-        document.getElementById('printBtn').addEventListener('click', function() {
+        document.getElementById('printBtn')?.addEventListener('click', function() {
             window.print();
         });
         
         // Share functionality (básico)
-        document.getElementById('shareBtn').addEventListener('click', function() {
+        document.getElementById('shareBtn')?.addEventListener('click', function() {
             if (navigator.share) {
                 navigator.share({
                     title: 'Introducción a la Inteligencia Artificial',
@@ -1051,16 +1407,38 @@
                 const targetId = this.getAttribute('href').substring(1);
                 const targetElement = document.getElementById(targetId);
                 
-                window.scrollTo({
-                    top: targetElement.offsetTop - 80,
-                    behavior: 'smooth'
-                });
-                
-                // Cerrar sidebar en móvil al hacer clic
-                if (window.innerWidth <= 768) {
-                    document.getElementById('sidebar').classList.remove('active');
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Cerrar sidebar en móvil al hacer clic
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.remove('active');
+                    }
                 }
             });
+        });
+        
+        // Expandir/colapsar preguntas FAQ
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const isVisible = answer.style.display === 'block';
+                
+                answer.style.display = isVisible ? 'none' : 'block';
+            });
+        });
+        
+        // Inicializar: ocultar respuestas FAQ
+        document.querySelectorAll('.faq-answer').forEach(answer => {
+            answer.style.display = 'none';
+        });
+        
+        // Añadir animación al menú radial
+        document.querySelectorAll('.menu-item').forEach((item, index) => {
+            item.style.transitionDelay = `${index * 0.05}s`;
         });
     </script>
 </body>

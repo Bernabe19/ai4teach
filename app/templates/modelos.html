@@ -168,7 +168,7 @@
     <header class="header">
         <div class="logo">
             <!-- <img src="../static/pesa.png" alt="AI4Teach Logo"> -->
-            ai4teach
+            <a style="text-decoration: none; color: inherit;" href="home">AI4Teach</a>
         </div>
         <div class="user-info">
             <span>{{username}}</span>
@@ -296,7 +296,7 @@
                     <h2>${model.name}</h2>
                     <p>${model.description}</p>
                     <button onclick="trainModel(${model.id})">Entrenar</button>
-                    <button onclick="selectModel(${model.id})">Seleccionar</button>
+                    <button onclick="selectModel(${model.id})">Saber más</button>
                 `;
                 modelList.appendChild(modelCard);
             });

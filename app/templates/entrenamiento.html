@@ -309,7 +309,7 @@
 <body>
     <header class="header">
         <div class="logo">
-            ai4teach
+            <a style="text-decoration: none; color: inherit;" href="home">AI4Teach</a>
         </div>
         <div class="user-info">
             <span id="username">Usuario</span>
@@ -406,10 +406,10 @@
                         <div style="margin-top: 10px;">
                             <label for="dataset-format">Formato:</label>
                             <select id="dataset-format" class="form-control">
+                                <option value="npz">NumPy (.npz)</option>
                                 <option value="csv">CSV</option>
                                 <option value="json">JSON</option>
                                 <option value="images">Imágenes</option>
-                                <option value="npz">NumPy (.npz)</option>
                                 <option value="h5">HDF5 (.h5)</option>
                             </select>
                         </div>
@@ -502,7 +502,7 @@
                 </div>
                 
                 <div style="margin-top: 30px; text-align: right;">
-                    <button onclick="sendOptions()" id="start-training-btn" class="btn">Iniciar Entrenamiento</button>
+                    <button onclick="sendOptions(), iniciarStream()" id="start-training-btn" class="btn">Iniciar Entrenamiento</button>
                 </div>
             </div>
             
@@ -928,18 +928,7 @@
                     content.classList.add('active');
                 }
             });
-            const eventSource = new EventSource("http://localhost:8080/stream-metrics");
 
-            eventSource.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                console.log("Nueva época:", data.epoch);
-                // actualizarGrafico(data); // tu función de renderizado
-            };
-
-            eventSource.onerror = function(err) {
-                console.error("Error en el stream:", err);
-                eventSource.close();
-            };
             
             // Iniciar simulación de entrenamiento
             trainingInProgress = true;
@@ -1016,22 +1005,22 @@
             currentEpoch++;
             
             // Generar métricas simuladas
-            const accuracy = Math.min(0.5 + (currentEpoch / totalEpochs) * 0.4 + Math.random() * 0.1, 0.99);
-            const loss = Math.max(0.8 - (currentEpoch / totalEpochs) * 0.7 + Math.random() * 0.1, 0.1);
-            const val_accuracy = accuracy - Math.random() * 0.1;
-            const val_loss = loss + Math.random() * 0.1;
+            // const accuracy = Math.min(0.5 + (currentEpoch / totalEpochs) * 0.4 + Math.random() * 0.1, 0.99);
+            // const loss = Math.max(0.8 - (currentEpoch / totalEpochs) * 0.7 + Math.random() * 0.1, 0.1);
+            // const val_accuracy = accuracy - Math.random() * 0.1;
+            // const val_loss = loss + Math.random() * 0.1;
             
             // Guardar datos
-            trainingData.accuracy.push(accuracy);
-            trainingData.loss.push(loss);
-            trainingData.val_accuracy.push(val_accuracy);
-            trainingData.val_loss.push(val_loss);
+            // trainingData.accuracy.push(accuracy);
+            // trainingData.loss.push(loss);
+            // trainingData.val_accuracy.push(val_accuracy);
+            // trainingData.val_loss.push(val_loss);
             
             // Actualizar UI
-            document.getElementById('train-accuracy').textContent = (accuracy * 100).toFixed(2) + '%';
-            document.getElementById('train-loss').textContent = loss.toFixed(3);
-            document.getElementById('val-accuracy').textContent = (val_accuracy * 100).toFixed(2) + '%';
-            document.getElementById('val-loss').textContent = val_loss.toFixed(3);
+            document.getElementById('train-accuracy').textContent = (trainingData.accuracy[currentEpoch - 1] * 100).toFixed(2) + '%';
+            document.getElementById('train-loss').textContent = trainingData.loss[currentEpoch - 1].toFixed(3);
+            document.getElementById('val-accuracy').textContent = (trainingData.val_accuracy[currentEpoch - 1] * 100).toFixed(2) + '%';
+            document.getElementById('val-loss').textContent = trainingData.val_loss[currentEpoch - 1].toFixed(3);
             
             // Actualizar gráficos
             updateCharts();
@@ -1282,7 +1271,47 @@
                 alert('Error al iniciar el entrenamiento');
             }
         }
+        const params = new URLSearchParams(window.location.search);
+        const model = params.get("model");
+        if (model) {
+            const select = document.getElementById("model-select");
+            const option = Array.from(select.options).find(opt => opt.value === model);
+            if (option) {
+                option.selected = true;
+            }
+        }
+
+        let eventSource = null;
+
+        function iniciarStream() {
+            if (eventSource) {
+                console.log("Stream ya iniciado");
+                return; // Ya está en marcha
+            }
+
+            eventSource = new EventSource("http://localhost:8080/stream-metrics");
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                console.log("Epoch:", data.epoch, "Accuracy:", data.train_accuracy);
+                trainingData.accuracy.push(data.train_accuracy);
+                trainingData.loss.push(data.train_loss);
+                trainingData.val_accuracy.push(data.val_accuracy);
+                trainingData.val_loss.push(data.val_loss);
+                if (data.test_accuracy !== undefined) {
+                    console.log("🎯 Test Accuracy (final):", data.test_accuracy);
+                    eventSource.close(); // opcional
+                }
+            };
+
+            eventSource.onerror = function(err) {
+                console.error("Error en el stream:", err);
+                eventSource.close();
+                eventSource = null; // Permite volver a intentarlo si falla
+            };
+        }
         
+
     </script>
 </body>
 </html>

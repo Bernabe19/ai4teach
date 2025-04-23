@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../static/cerebro.png">
+    <title>AI4Teach - Gestión de Modelos</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #185d96;
+        }
+        .logo img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .model-nav {
+            margin-bottom: 30px;
+        }
+        .model-types {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .model-types > li {
+            position: relative;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        .model-types span {
+            color: #185d96;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        .model-types span:hover {
+            color: #3498db;
+        }
+        .model-tasks {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+            list-style-type: none;
+            padding: 0;
+        }
+        .model-types li:hover .model-tasks {
+            display: block;
+        }
+        .model-tasks li a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .model-tasks li a:hover {
+            background-color: #e9e9e9;
+        }
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            display: flex;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+        #search-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+        }
+        #search-button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #185d96;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0 5px 5px 0;
+            transition: background-color 0.3s;
+        }
+        #search-button:hover {
+            background-color: #164e7c;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-button {
+            background-color: #185d96;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .action-button:hover {
+            background-color: #164e7c;
+        }
+        .action-button i {
+            margin-right: 5px;
+        }
+        #model-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .model-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 300px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .model-card h2 {
+            margin-top: 0;
+            color: #185d96;
+        }
+        .model-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .model-card .card-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .model-card button {
+            background-color: #185d96;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            flex-grow: 1;
+        }
+        .model-card button:hover {
+            background-color: #164e7c;
+        }
+        .model-info {
+            margin-bottom: 15px;
+        }
+        .model-info .tag {
+            display: inline-block;
+            background-color: #e9f2fb;
+            color: #185d96;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 50%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .close-modal:hover {
+            color: #555;
+        }
+        .modal-title {
+            margin-top: 0;
+            color: #185d96;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        select.form-control {
+            background-color: white;
+        }
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .file-upload input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            cursor: pointer;
+            display: block;
+        }
+        .file-upload-label {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .file-name {
+            margin-left: 10px;
+            font-style: italic;
+        }
+        .modal-footer {
+            text-align: right;
+            margin-top: 30px;
+        }
+        .btn {
+            background-color: #185d96;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #164e7c;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Export format options */
+        .export-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .export-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .export-option:hover {
+            background-color: #f5f5f5;
+        }
+        .export-option input[type="radio"] {
+            margin-right: 10px;
+        }
+        .export-option-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .export-option-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .export-option-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+        .toast.error {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a style="text-decoration: none; color: inherit;" href="home">AI4Teach</a>
+        </div>
+        <div class="user-info">
+            <span id="username">Usuario</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="model-nav">
+            <ul class="model-types">
+                <li>
+                    <span onclick="filterByType('text')">Texto</span>
+                    <ul class="model-tasks">
+                        <li><a onclick="filterByTypeAndTask('text', 'classification')" href="#">Clasificación</a></li>
+                        <li><a onclick="filterByTypeAndTask('text', 'generation')" href="#">Generación</a></li>
+                        <li><a onclick="filterByTypeAndTask('text', 'translation')" href="#">Traducción</a></li>
+                        <li><a onclick="filterByTypeAndTask('text', 'summary')" href="#">Resumen</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span onclick="filterByType('image')">Imagen</span>
+                    <ul class="model-tasks">
+                        <li><a onclick="filterByTypeAndTask('image', 'classification')" href="#">Clasificación</a></li>
+                        <li><a onclick="filterByTypeAndTask('image', 'generation')" href="#">Generación</a></li>
+                        <li><a onclick="filterByTypeAndTask('image', 'segmentation')" href="#">Segmentación</a></li>
+                        <li><a onclick="filterByTypeAndTask('image', 'detection')" href="#">Detección</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span onclick="filterByType('audio')">Audio</span>
+                    <ul class="model-tasks">
+                        <li><a onclick="filterByTypeAndTask('audio', 'recognition')" href="#">Reconocimiento</a></li>
+                        <li><a onclick="filterByTypeAndTask('audio', 'generation')" href="#">Generación</a></li>
+                        <li><a onclick="filterByTypeAndTask('audio', 'transcription')" href="#">Transcripción</a></li>
+                        <li><a onclick="filterByTypeAndTask('audio', 'classification')" href="#">Clasificación</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span onclick="filterByType('video')">Video</span>
+                    <ul class="model-tasks">
+                        <li><a onclick="filterByTypeAndTask('video', 'classification')" href="#">Clasificación</a></li>
+                        <li><a onclick="filterByTypeAndTask('video', 'detection')" href="#">Detección</a></li>
+                        <li><a onclick="filterByTypeAndTask('video', 'tracking')" href="#">Seguimiento</a></li>
+                        <li><a onclick="filterByTypeAndTask('video', 'generation')" href="#">Generación</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span onclick="renderModels(models)">Todos</span>
+                    <ul class="model-tasks">
+                        <li><a onclick="filterByTask('classification')" href="#">Clasificación</a></li>
+                        <li><a onclick="filterByTask('generation')" href="#">Generación</a></li>
+                        <li><a onclick="filterByTask('translation')" href="#">Traducción</a></li>
+                        <li><a onclick="filterByTask('summary')" href="#">Resumen</a></li>
+                        <li><a onclick="filterByTask('segmentation')" href="#">Segmentación</a></li>
+                        <li><a onclick="filterByTask('detection')" href="#">Detección</a></li>
+                        <li><a onclick="filterByTask('tracking')" href="#">Seguimiento</a></li>
+                        <li><a onclick="filterByTask('recognition')" href="#">Reconocimiento</a></li>
+                        <li><a onclick="filterByTask('transcription')" href="#">Transcripción</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Buscar modelo...">
+                <button id="search-button">🔍</button>
+            </div>
+            <div class="action-buttons">
+                <button class="action-button" id="import-model-btn">
+                    <i>📥</i> Importar Modelo
+                </button>
+            </div>
+        </div>
+
+        <main id="model-list">
+            <!-- Los modelos se cargarán aquí dinámicamente -->
+        </main>
+    </div>
+
+    <!-- Modal para importar modelo -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title">Importar Nuevo Modelo</h2>
+            <form id="import-form">
+                <div class="form-group">
+                    <label for="model-name">Nombre del Modelo:</label>
+                    <input type="text" id="model-name" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="model-type">Tipo de Modelo:</label>
+                    <select id="model-type" class="form-control" required>
+                        <option value="">-- Seleccione un tipo --</option>
+                        <option value="text">Texto</option>
+                        <option value="image">Imagen</option>
+                        <option value="audio">Audio</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="model-task">Tarea:</label>
+                    <select id="model-task" class="form-control" required>
+                        <option value="">-- Seleccione una tarea --</option>
+                        <!-- Las opciones se cargarán dinámicamente según el tipo seleccionado -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="model-description">Descripción:</label>
+                    <textarea id="model-description" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Archivo del Modelo:</label>
+                    <div class="file-upload">
+                        <label class="file-upload-label">Seleccionar Archivo</label>
+                        <input type="file" id="model-file" accept=".h5,.pb,.onnx,.pt,.pth,.pkl,.bin,.tflite,.mlmodel" required>
+                        <span class="file-name" id="model-filename">Ningún archivo seleccionado</span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-import">Cancelar</button>
+                    <button type="submit" class="btn">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para exportar modelo -->
+    <div id="export-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title">Exportar Modelo</h2>
+            <p id="export-model-name" style="margin-bottom: 20px; font-size: 18px;"></p>
+            
+            <div class="form-group">
+                <label>Seleccione el formato de exportación:</label>
+                <div class="export-options">
+                    <label class="export-option">
+                        <input type="radio" name="export-format" value="tflite" checked>
+                        <div class="export-option-info">
+                            <span class="export-option-title">TensorFlow Lite (.tflite)</span>
+                            <span class="export-option-desc">Optimizado para dispositivos móviles y embebidos. Ideal para aplicaciones Android e iOS.</span>
+                        </div>
+                    </label>
+                    
+                    <label class="export-option">
+                        <input type="radio" name="export-format" value="h5">
+                        <div class="export-option-info">
+                            <span class="export-option-title">Keras (.h5)</span>
+                            <span class="export-option-desc">Formato nativo de Keras. Conserva la arquitectura completa y los pesos del modelo.</span>
+                        </div>
+                    </label>
+                    
+                    <label class="export-option">
+                        <input type="radio" name="export-format" value="tfjs">
+                        <div class="export-option-info">
+                            <span class="export-option-title">TensorFlow.js</span>
+                            <span class="export-option-desc">Para ejecutar modelos directamente en navegadores web y Node.js.</span>
+                        </div>
+                    </label>
+                    
+                    <label class="export-option">
+                        <input type="radio" name="export-format" value="savedmodel">
+                        <div class="export-option-info">
+                            <span class="export-option-title">SavedModel</span>
+                            <span class="export-option-desc">Formato estándar de TensorFlow. Incluye gráfico, variables y metadatos.</span>
+                        </div>
+                    </label>
+                    
+                    <label class="export-option">
+                        <input type="radio" name="export-format" value="onnx">
+                        <div class="export-option-info">
+                            <span class="export-option-title">ONNX (.onnx)</span>
+                            <span class="export-option-desc">Formato de intercambio abierto. Compatible con múltiples frameworks de ML.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="export-options">Opciones de optimización:</label>
+                <select id="export-options" class="form-control">
+                    <option value="none">Sin optimización</option>
+                    <option value="quantize">Cuantización (reduce tamaño)</option>
+                    <option value="optimize">Optimización para inferencia</option>
+                    <option value="prune">Poda (elimina conexiones innecesarias)</option>
+                </select>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-export">Cancelar</button>
+                <button type="button" class="btn" id="confirm-export">Exportar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Datos de ejemplo de los modelos
+        const models = [
+            // TEXT
+            { id: 1, name: 'GPT-3', type: 'text', task: 'generation', description: 'Modelo de lenguaje de gran escala para generación de texto.' },
+            { id: 2, name: 'BERT', type: 'text', task: 'classification', description: 'Modelo de procesamiento de lenguaje natural para clasificación y otras tareas.' },
+            { id: 3, name: 'T5', type: 'text', task: 'translation', description: 'Modelo de texto a texto que puede realizar traducción, resumen y más.' },
+            { id: 4, name: 'Pegasus', type: 'text', task: 'summary', description: 'Modelo especializado en generar resúmenes automáticos de textos largos.' },
+            { id: 5, name: 'RoBERTa', type: 'text', task: 'classification', description: 'Modelo robusto optimizado a partir de BERT para tareas de clasificación.' },
+            { id: 6, name: 'XLNet', type: 'text', task: 'generation', description: 'Modelo de lenguaje autoregresivo que mejora la generación de texto.' },
+            { id: 7, name: 'MarianMT', type: 'text', task: 'translation', description: 'Modelo multilingüe de traducción entrenado por Facebook AI.' },
+            { id: 8, name: 'Bart', type: 'text', task: 'summary', description: 'Modelo encoder-decoder versátil, eficaz para resúmenes y generación.' },
+
+            // IMAGE
+            { id: 9, name: 'DALL-E', type: 'image', task: 'generation', description: 'Modelo para generar imágenes a partir de descripciones textuales.' },
+            { id: 10, name: 'ResNet', type: 'image', task: 'classification', description: 'Red neuronal convolucional para clasificación de imágenes.' },
+            { id: 11, name: 'YOLOv5', type: 'image', task: 'detection', description: 'Modelo de detección en tiempo real de objetos en imágenes.' },
+            { id: 12, name: 'U-Net', type: 'image', task: 'segmentation', description: 'Modelo ampliamente utilizado para segmentación semántica de imágenes.' },
+            { id: 13, name: 'StyleGAN2', type: 'image', task: 'generation', description: 'Modelo generativo de imágenes realistas, especialmente rostros humanos.' },
+            { id: 14, name: 'EfficientNet', type: 'image', task: 'classification', description: 'Modelo eficiente y preciso para clasificación de imágenes.' },
+            { id: 15, name: 'Mask R-CNN', type: 'image', task: 'segmentation', description: 'Modelo que combina detección de objetos con segmentación precisa.' },
+            { id: 16, name: 'Faster R-CNN', type: 'image', task: 'detection', description: 'Modelo de detección de objetos preciso y popular en visión por computador.' },
+
+            // AUDIO
+            { id: 17, name: 'Whisper', type: 'audio', task: 'transcription', description: 'Modelo de OpenAI para transcripción automática y multilingüe de audio.' },
+            { id: 18, name: 'WaveNet', type: 'audio', task: 'generation', description: 'Modelo generativo para síntesis de voz realista.' },
+            { id: 19, name: 'DeepSpeech', type: 'audio', task: 'recognition', description: 'Sistema de reconocimiento automático de voz desarrollado por Mozilla.' },
+            { id: 20, name: 'YAMNet', type: 'audio', task: 'classification', description: 'Modelo basado en MobileNet para clasificar sonidos ambientales.' },
+            { id: 21, name: 'Jukebox', type: 'audio', task: 'generation', description: 'Modelo generativo de OpenAI para creación de música con voz y letra.' },
+            { id: 22, name: 'HuBERT', type: 'audio', task: 'transcription', description: 'Modelo auto-supervisado para extracción de características de voz.' },
+
+            // VIDEO
+            { id: 23, name: 'SlowFast', type: 'video', task: 'classification', description: 'Modelo que procesa diferentes frecuencias temporales para analizar vídeos.' },
+            { id: 24, name: 'I3D', type: 'video', task: 'classification', description: 'Modelo inflado 3D para reconocimiento de acciones en vídeos.' },
+            { id: 25, name: 'ST-GCN', type: 'video', task: 'detection', description: 'Modelo basado en grafos para análisis de acciones humanas en vídeos.' },
+            { id: 26, name: 'SiamMask', type: 'video', task: 'tracking', description: 'Modelo eficiente para seguimiento de objetos en vídeos en tiempo real.' },
+            { id: 27, name: 'Vid2Vid', type: 'video', task: 'generation', description: 'Modelo para generación de vídeo a partir de diferentes fuentes visuales.' },
+            { id: 28, name: 'Tracktor', type: 'video', task: 'tracking', description: 'Modelo de seguimiento basado en regresión de bounding boxes desde detecciones previas.' },
+            { id: 29, name: 'RT-DETR', type: 'video', task: 'detection', description: 'Detección de objetos en tiempo real basado en Transformer.' }
+        ];
+
+        // Mapeo de tipos a tareas
+        const tasksByType = {
+            'text': ['classification', 'generation', 'translation', 'summary'],
+            'image': ['classification', 'generation', 'segmentation', 'detection'],
+            'audio': ['recognition', 'generation', 'transcription', 'classification'],
+            'video': ['classification', 'detection', 'tracking', 'generation']
+        };
+
+        // Mapeo de tareas a nombres legibles
+        const taskNames = {
+            'classification': 'Clasificación',
+            'generation': 'Generación',
+            'translation': 'Traducción',
+            'summary': 'Resumen',
+            'segmentation': 'Segmentación',
+            'detection': 'Detección',
+            'tracking': 'Seguimiento',
+            'recognition': 'Reconocimiento',
+            'transcription': 'Transcripción'
+        };
+
+        // Mapeo de formatos de exportación a extensiones
+        const formatExtensions = {
+            'tflite': '.tflite',
+            'h5': '.h5',
+            'tfjs': '.zip',
+            'savedmodel': '.zip',
+            'onnx': '.onnx'
+        };
+
+        // Elementos DOM
+        const importModelBtn = document.getElementById('import-model-btn');
+        const importModal = document.getElementById('import-modal');
+        const exportModal = document.getElementById('export-modal');
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+        const cancelImport = document.getElementById('cancel-import');
+        const cancelExport = document.getElementById('cancel-export');
+        const confirmExport = document.getElementById('confirm-export');
+        const importForm = document.getElementById('import-form');
+        const modelTypeSelect = document.getElementById('model-type');
+        const modelTaskSelect = document.getElementById('model-task');
+        const modelFileInput = document.getElementById('model-file');
+        const modelFilename = document.getElementById('model-filename');
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const toast = document.getElementById('toast');
+        const exportModelName = document.getElementById('export-model-name');
+        const exportOptions = document.getElementById('export-options');
+        let currentExportModelId = null;
+
+        // Función para renderizar los modelos
+        function renderModels(modelsToRender) {
+            const modelList = document.getElementById('model-list');
+            modelList.innerHTML = '';
+            
+            if (modelsToRender.length === 0) {
+                modelList.innerHTML = '<div style="text-align: center; width: 100%; padding: 50px;"><h3>No se encontraron modelos que coincidan con los criterios de búsqueda.</h3></div>';
+                return;
+            }
+            
+            modelsToRender.forEach(model => {
+                const modelCard = document.createElement('div');
+                modelCard.className = 'model-card';
+                modelCard.innerHTML = `
+                    <h2>${model.name}</h2>
+                    <div class="model-info">
+                        <span class="tag">${model.type.charAt(0).toUpperCase() + model.type.slice(1)}</span>
+                        <span class="tag">${taskNames[model.task]}</span>
+                    </div>
+                    <p>${model.description}</p>
+                    <div class="card-buttons">
+                        <button onclick="trainModel(${model.id})">Entrenar</button>
+                        <button onclick="showExportModal(${model.id})">Exportar</button>
+                        <!--<button onclick="selectModel(${model.id})">Seleccionar</button>-->
+                    </div>
+                `;
+                modelList.appendChild(modelCard);
+            });
+        }
+
+        // Función para filtrar modelos por término de búsqueda
+        function filterModels(searchTerm) {
+            return models.filter(model => 
+                model.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                model.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                model.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                taskNames[model.task].toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Función para filtrar modelos por tipo
+        function filterByType(type) {
+            const filteredModels = models.filter(model => model.type === type);
+            renderModels(filteredModels);
+        }
+
+        // Función para filtrar modelos por tarea
+        function filterByTask(task) {
+            const filteredModels = models.filter(model => model.task === task);
+            renderModels(filteredModels);
+        }
+
+        // Función para filtrar modelos por tipo y tarea
+        function filterByTypeAndTask(type, task) {
+            const filteredModels = models.filter(model => model.type === type && model.task === task);
+            renderModels(filteredModels);
+        }
+
+        // Función para mostrar notificación toast
+        function showToast(message, isError = false) {
+            toast.textContent = message;
+            toast.className = isError ? 'toast error' : 'toast';
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Función para entrenar modelo
+        function trainModel(modelId) {
+            const model = models.find(m => m.id === modelId);
+            if (model) {
+                window.location.href = `entrenamiento?model=${modelId}`;
+            }
+        }
+
+        // Función para mostrar el modal de exportación
+        function showExportModal(modelId) {
+            const model = models.find(m => m.id === modelId);
+            if (model) {
+                currentExportModelId = modelId;
+                exportModelName.textContent = `Modelo: ${model.name}`;
+                exportModal.style.display = 'block';
+            }
+        }
+
+        // Función para exportar modelo
+        function exportModel() {
+            const model = models.find(m => m.id === currentExportModelId);
+            if (!model) return;
+            
+            const formatRadios = document.getElementsByName('export-format');
+            let selectedFormat = 'tflite'; // Valor por defecto
+            
+            for (const radio of formatRadios) {
+                if (radio.checked) {
+                    selectedFormat = radio.value;
+                    break;
+                }
+            }
+            
+            const optimization = exportOptions.value;
+            const extension = formatExtensions[selectedFormat];
+            
+            // Simulación de exportación (en una aplicación real, esto haría una petición al servidor)
+            setTimeout(() => {
+                // Crear un objeto Blob simulando el archivo exportado
+                let fileContent = '';
+                
+                if (selectedFormat === 'tfjs') {
+                    // Simular un archivo JSON para TensorFlow.js
+                    fileContent = JSON.stringify({
+                        modelTopology: { /* datos simulados */ },
+                        weightsManifest: [{ /* datos simulados */ }],
+                        format: "tfjs",
+                        generatedBy: "AI4Teach",
+                        convertedBy: "AI4Teach Export Tool",
+                        modelName: model.name,
+                        exportDate: new Date().toISOString()
+                    }, null, 2);
+                } else {
+                    // Para otros formatos, solo simulamos datos binarios
+                    fileContent = "SIMULATED_BINARY_DATA";
+                }
+                
+                const blob = new Blob([fileContent], { 
+                    type: selectedFormat === 'tfjs' ? 'application/json' : 'application/octet-stream' 
+                });
+                
+                const url = URL.createObjectURL(blob);
+                
+                // Crear un enlace temporal para descargar el archivo
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${model.name.replace(/\s+/g, '_')}${extension}`;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Limpiar
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 0);
+                
+                // Cerrar modal y mostrar notificación
+                exportModal.style.display = 'none';
+                showToast(`Modelo "${model.name}" exportado en formato ${selectedFormat.toUpperCase()}`);
+            }, 1000); // Simular un pequeño retraso para la exportación
+        }
+
+        // Función para seleccionar modelo
+        function selectModel(modelId) {
+            const model = models.find(m => m.id === modelId);
+            if (model) {
+                showToast(`Modelo "${model.name}" seleccionado`);
+                // Aquí se podría implementar la lógica para usar el modelo seleccionado
+            }
+        }
+
+        // Función para actualizar las opciones de tarea según el tipo seleccionado
+        function updateTaskOptions() {
+            const selectedType = modelTypeSelect.value;
+            modelTaskSelect.innerHTML = '<option value="">-- Seleccione una tarea --</option>';
+            
+            if (selectedType) {
+                const tasks = tasksByType[selectedType];
+                tasks.forEach(task => {
+                    const option = document.createElement('option');
+                    option.value = task;
+                    option.textContent = taskNames[task];
+                    modelTaskSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Evento de búsqueda
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value;
+            const filteredModels = filterModels(searchTerm);
+            renderModels(filteredModels);
+        });
+
+        // Evento de búsqueda al presionar Enter
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = searchInput.value;
+                const filteredModels = filterModels(searchTerm);
+                renderModels(filteredModels);
+            }
+        });
+
+        // Evento para mostrar el modal de importación
+        importModelBtn.addEventListener('click', function() {
+            importModal.style.display = 'block';
+        });
+
+        // Eventos para cerrar los modales
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                importModal.style.display = 'none';
+                exportModal.style.display = 'none';
+            });
+        });
+
+        cancelImport.addEventListener('click', function() {
+            importModal.style.display = 'none';
+        });
+
+        cancelExport.addEventListener('click', function() {
+            exportModal.style.display = 'none';
+        });
+
+        // Confirmar exportación
+        confirmExport.addEventListener('click', exportModel);
+
+        // Cerrar los modales al hacer clic fuera de ellos
+        window.addEventListener('click', function(event) {
+            if (event.target === importModal) {
+                importModal.style.display = 'none';
+            }
+            if (event.target === exportModal) {
+                exportModal.style.display = 'none';
+            }
+        });
+
+        // Actualizar las opciones de tarea cuando cambia el tipo
+        modelTypeSelect.addEventListener('change', updateTaskOptions);
+
+        // Mostrar el nombre del archivo seleccionado
+        modelFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                modelFilename.textContent = this.files[0].name;
+            } else {
+                modelFilename.textContent = 'Ningún archivo seleccionado';
+            }
+        });
+
+        // Manejar el envío del formulario de importación
+        importForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('model-name').value;
+            const type = modelTypeSelect.value;
+            const task = modelTaskSelect.value;
+            const description = document.getElementById('model-description').value;
+            const file = modelFileInput.files[0];
+            
+            if (!file) {
+                showToast('Por favor, seleccione un archivo de modelo', true);
+                return;
+            }
+            
+            // Generar un nuevo ID para el modelo
+            const newId = Math.max(...models.map(m => m.id)) + 1;
+            
+            // Crear el nuevo modelo
+            const newModel = {
+                id: newId,
+                name: name,
+                type: type,
+                task: task,
+                description: description,
+                // En una aplicación real, aquí se procesaría el archivo
+                // y se guardaría en el servidor
+            };
+            
+            // Agregar el nuevo modelo a la lista
+            models.push(newModel);
+            
+            // Cerrar el modal y mostrar notificación
+            importModal.style.display = 'none';
+            showToast(`Modelo "${name}" importado correctamente`);
+            
+            // Actualizar la vista
+            renderModels(models);
+            
+            // Resetear el formulario
+            importForm.reset();
+            modelFilename.textContent = 'Ningún archivo seleccionado';
+        });
+
+        // Renderizar todos los modelos al cargar la página
+        renderModels(models);
+    </script>
+</body>
+</html>

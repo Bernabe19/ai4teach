@@ -1,9 +1,9 @@
 # !/home/berna/.env/bin
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import models, datasets, users
 from pydantic import BaseModel
@@ -40,10 +40,17 @@ async def get_home(request: Request):
          username = request.cookies.get("usuario")
          return templates.TemplateResponse("modelos.html", {"request": request, "username": username})
 
-@app.get("/entrenamiento", tags=["entrenamiento"])
-async def get_home(request: Request):
+@app.get("/entrenamiento", response_class=HTMLResponse, tags=["entrenamiento"])
+async def get_home(request: Request, model: str = Query(None)):
          username = request.cookies.get("usuario")
-         return templates.TemplateResponse("entrenamiento.html", {"request": request, "username": username})
+         return templates.TemplateResponse(
+                "entrenamiento.html",
+                {
+                        "request": request,
+                        "username": username,
+                        "model": model
+                }
+        )
 
 @app.get("/datasets", tags=["datasets"])
 async def get_home(request: Request):
@@ -54,6 +61,11 @@ async def get_home(request: Request):
 async def get_home(request: Request):
          username = request.cookies.get("usuario")
          return templates.TemplateResponse("contenidos.html", {"request": request, "username": username})
+
+@app.get("/mismodelos", tags=["mismodelos"])
+async def get_home(request: Request):
+         username = request.cookies.get("usuario")
+         return templates.TemplateResponse("mismodelos.html", {"request": request, "username": username})
 
 @app.post("/", tags=["login"])
 async def process_login(request: Request, response: Response):
