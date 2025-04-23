@@ -6,6 +6,9 @@ from tensorflow.keras import layers, models, backend as K
 import tensorflow_datasets as tfds
 import time
 import json
+from PIL import Image
+from io import BytesIO
+import numpy as np
 import gc
 
 router = APIRouter()
@@ -110,9 +113,9 @@ def prepare_datasets():
     val_sample = int(len(val_data) * (last_training_config["porcentajeDataset"] / 100))
     test_sample = int(len(test_data) * (last_training_config["porcentajeDataset"] / 100))
     
-    train_data = train_data.take(train_sample).cache()
-    val_data = val_data.take(val_sample).cache()
-    test_data = test_data.take(test_sample).cache()
+    train_data = train_data.take(train_sample)
+    val_data = val_data.take(val_sample)
+    test_data = test_data.take(test_sample)
 
     # Preprocesamiento
     train_data = train_data.map(preprocess_resnet)
@@ -261,26 +264,47 @@ async def read_model_params(
     return JSONResponse({"message": "Parámetros recibidos correctamente"})
 
 # Ruta para inferencia optimizada
-@router.post("/inference")
+@router.post("/run-inference")
+@router.post("/run-inference")
 async def read_inference(
-    model: str = Form(...),
-    dataSource: str = Form(...),
-    dataset: Optional[str] = Form(None),
-    format: Optional[str] = Form(None),
-    batchSize: int = Form(...),
-    file: Optional[UploadFile] = File(None)
+    file: UploadFile = File(...),
 ):
     try:
-        # Usar el modelo cargado o cargar uno nuevo si es necesario
-        inference_model = get_model()
-        
-        # Aquí procesarías la inferencia según el tipo de input
-        result = {"status": "success", "message": "Modelo listo para inferencia"}
-        
-        # Después de la inferencia, limpiar recursos no necesarios
-        gc.collect()
-        
-        return JSONResponse(result)
+        # Cargar modelo (o reutilizar uno existente)
+        model = get_model()
+        if model is None:
+            return JSONResponse({"status": "error", "message": "Modelo no cargado"})
+
+        # Leer el contenido del archivo
+        contents = await file.read()
+        image = Image.open(BytesIO(contents)) #.convert("L")  # Convertir a escala de grises
+        image = image.resize((28, 28))
+        img_array = np.array(image)
+
+        # Normalizar y agregar dimensiones
+        img_array = img_array.astype("float32") / 255.0
+        img_array = np.expand_dims(img_array, axis=(0, -1))  # (1, 28, 28, 1)
+
+        # Medir el tiempo de inferencia
+        start_time = time.time()
+        predictions = model.predict(img_array)
+        end_time = time.time()
+
+        predicted_class = int(np.argmax(predictions))
+        confidence = float(np.max(predictions))
+        inference_time = end_time - start_time
+
+        # Opcional: confianza por clase
+        confidences = {f"class_{i}": float(pred) for i, pred in enumerate(predictions[0])}
+
+        return JSONResponse({
+            "status": "success",
+            "predicted_class": predicted_class,
+            "confidence": confidence,
+            "inference_time": round(inference_time, 4),
+            "confidences": confidences
+        })
+    
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)})
 

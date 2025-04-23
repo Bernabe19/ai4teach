@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE
+html >
+  <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -304,6 +305,39 @@
             font-weight: bold;
             color: #185d96;
         }
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons .btn {
+            margin-bottom: 10px;
+            flex: 0 1 auto;
+        }
+
+        @media (max-width: 768px) {
+            .action-buttons {
+                justify-content: center;
+            }
+            
+            .action-buttons .btn {
+                flex: 1 1 calc(50% - 10px);
+                max-width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding: 12px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .action-buttons .btn {
+                flex: 1 1 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -553,7 +587,11 @@
                     </div>
                 </div>
                 
-                <div style="margin-top: 30px; text-align: right;">
+                <div class="action-buttons">
+                    <button onclick="downloadJSON(metrics)" class="btn btn-primary">Descargar JSON</button>
+                    <button onclick="downloadCSV(metrics)" class="btn btn-primary">Descargar CSV</button>
+                    <button onclick="downloadChartImage('accuracy')" class="btn btn-info">Descargar gráfico de precisión</button>
+                    <button onclick="downloadChartImage('loss')" class="btn btn-danger">Descargar gráfico de pérdida</button>
                     <button id="stop-training-btn" class="btn btn-secondary">Detener Entrenamiento</button>
                 </div>
             </div>
@@ -613,7 +651,8 @@
     </div>
 
     <script>
-        // Variables globales
+            // Variables globales
+        let metrics = [];
         let trainingInProgress = false;
         let modelTrained = false;
         let currentEpoch = 0;
@@ -626,7 +665,8 @@
             val_loss: []
         };
         let trainingCompleted = false; // Nueva variable para controlar si el entrenamiento se completó
-        
+        let eventSource = null; // Variable para controlar la conexión SSE
+
         // Elementos DOM
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -646,7 +686,7 @@
         const dataSourceRadios = document.querySelectorAll('input[name="data-source"]');
         const serverDataSource = document.getElementById('server-data-source');
         const uploadDataSource = document.getElementById('upload-data-source');
-        
+
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
             // Configurar pestañas
@@ -705,7 +745,7 @@
             });
             
             // Iniciar entrenamiento
-            startTrainingBtn.addEventListener('click', startTraining);
+            startTrainingBtn.addEventListener('click', sendOptions);
             
             // Detener entrenamiento
             stopTrainingBtn.addEventListener('click', stopTraining);
@@ -753,8 +793,21 @@
 
             // Inicializar los gráficos
             initCharts();
+            
+            // Comprobar parámetros URL
+            const params = new URLSearchParams(window.location.search);
+            const model = params.get("model");
+            if (model) {
+                const select = document.getElementById("model-select");
+                const option = Array.from(select.options).find(opt => opt.value === model);
+                if (option) {
+                    option.selected = true;
+                    // Disparar el evento change para actualizar los datasets disponibles
+                    select.dispatchEvent(new Event('change'));
+                }
+            }
         });
-        
+
         // Función para inicializar los gráficos
         function initCharts() {
             // Opciones para el gráfico de precisión
@@ -890,13 +943,12 @@
             window.accuracyChart.render();
             window.lossChart.render();
         }
-        
+
         // Función para iniciar entrenamiento
         function startTraining() {
             const modelSelect = document.getElementById('model-select');
             const serverDataset = document.getElementById('server-dataset');
             const dataSource = document.querySelector('input[name="data-source"]:checked').value;
-            const batchSize = document.getElementById('batch-size');
             const epochs = document.getElementById('epochs');
             
             // Validar que se haya seleccionado un modelo
@@ -928,9 +980,8 @@
                     content.classList.add('active');
                 }
             });
-
             
-            // Iniciar simulación de entrenamiento
+            // Iniciar el entrenamiento real
             trainingInProgress = true;
             trainingCompleted = false; // Reiniciar el estado de completado
             currentEpoch = 0;
@@ -961,92 +1012,55 @@
                 data: []
             }]);
             
-            // Actualizar UI
-            updateTrainingProgress();
-            
-            // Simular entrenamiento
-            if (trainingInterval) {
-                clearInterval(trainingInterval); // Limpiar cualquier intervalo existente
-            }
-            trainingInterval = setInterval(simulateTrainingStep, 1000);
+            // Iniciar el stream de datos reales
+            iniciarStream();
         }
-        
+
         // Función para detener entrenamiento
         function stopTraining() {
             if (trainingInProgress) {
-                clearInterval(trainingInterval);
                 trainingInProgress = false;
                 
+                // Cerrar la conexión SSE
+                if (eventSource) {
+                    eventSource.close();
+                    eventSource = null;
+                }
+                
                 if (confirm('¿Desea detener el entrenamiento? El progreso actual se guardará.')) {
-                    // Finalizar entrenamiento
+                    // Finalizar entrenamiento anticipadamente
                     modelTrained = true;
-                    trainingCompleted = true; // Marcar como completado
+                    trainingCompleted = true;
                     
                     // Habilitar inferencia
                     inferenceSection.style.display = 'block';
                     noModelMessage.style.display = 'none';
                     
                     alert('Entrenamiento detenido. El modelo está listo para inferencia.');
+                    
+                    // Hacer una solicitud al servidor para detener el entrenamiento
+                    fetch('/stop-training', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Entrenamiento detenido en el servidor:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error al detener el entrenamiento:', error);
+                    });
                 } else {
                     // Continuar entrenamiento
                     trainingInProgress = true;
-                    trainingInterval = setInterval(simulateTrainingStep, 1000);
+                    iniciarStream(); // Reiniciar el stream
                 }
             }
         }
-        
-        // Función para simular un paso de entrenamiento
-        function simulateTrainingStep() {
-            // Verificar si el entrenamiento está en progreso
-            if (!trainingInProgress) {
-                return; // No continuar si el entrenamiento no está en progreso
-            }
-            
-            currentEpoch++;
-            
-            // Generar métricas simuladas
-            // const accuracy = Math.min(0.5 + (currentEpoch / totalEpochs) * 0.4 + Math.random() * 0.1, 0.99);
-            // const loss = Math.max(0.8 - (currentEpoch / totalEpochs) * 0.7 + Math.random() * 0.1, 0.1);
-            // const val_accuracy = accuracy - Math.random() * 0.1;
-            // const val_loss = loss + Math.random() * 0.1;
-            
-            // Guardar datos
-            // trainingData.accuracy.push(accuracy);
-            // trainingData.loss.push(loss);
-            // trainingData.val_accuracy.push(val_accuracy);
-            // trainingData.val_loss.push(val_loss);
-            
-            // Actualizar UI
-            document.getElementById('train-accuracy').textContent = (trainingData.accuracy[currentEpoch - 1] * 100).toFixed(2) + '%';
-            document.getElementById('train-loss').textContent = trainingData.loss[currentEpoch - 1].toFixed(3);
-            document.getElementById('val-accuracy').textContent = (trainingData.val_accuracy[currentEpoch - 1] * 100).toFixed(2) + '%';
-            document.getElementById('val-loss').textContent = trainingData.val_loss[currentEpoch - 1].toFixed(3);
-            
-            // Actualizar gráficos
-            updateCharts();
-            
-            // Actualizar progreso
-            updateTrainingProgress();
-            
-            // Verificar si el entrenamiento ha terminado
-            if (currentEpoch >= totalEpochs) {
-                clearInterval(trainingInterval);
-                trainingInProgress = false;
-                modelTrained = true;
-                trainingCompleted = true; // Marcar como completado
-                
-                // Habilitar inferencia
-                inferenceSection.style.display = 'block';
-                noModelMessage.style.display = 'none';
-                
-                // Solo mostrar la alerta si no se ha mostrado antes
-                if (!trainingCompleted) {
-                    alert('¡Entrenamiento completado! El modelo está listo para inferencia.');
-                }
-            }
-        }
-        
-        // Función para actualizar los gráficos
+
+        // Función para actualizar los gráficos con datos reales
         function updateCharts() {
             // Crear arrays de categorías (épocas)
             const categories = Array.from({length: currentEpoch}, (_, i) => i + 1);
@@ -1081,14 +1095,27 @@
                 data: trainingData.val_loss
             }]);
         }
-        
+
         // Función para actualizar la barra de progreso
         function updateTrainingProgress() {
             const progress = (currentEpoch / totalEpochs) * 100;
             trainingProgress.style.width = progress + '%';
             progressText.textContent = `Época ${currentEpoch}/${totalEpochs} - ${Math.round(progress)}%`;
+            
+            // Actualizar métricas en la UI
+            if (trainingData.accuracy.length > 0 && currentEpoch > 0) {
+                const lastIndex = currentEpoch - 1;
+                document.getElementById('train-accuracy').textContent = 
+                    (trainingData.accuracy[lastIndex] * 100).toFixed(2) + '%';
+                document.getElementById('train-loss').textContent = 
+                    trainingData.loss[lastIndex].toFixed(3);
+                document.getElementById('val-accuracy').textContent = 
+                    (trainingData.val_accuracy[lastIndex] * 100).toFixed(2) + '%';
+                document.getElementById('val-loss').textContent = 
+                    trainingData.val_loss[lastIndex].toFixed(3);
+            }
         }
-        
+
         // Función para ejecutar inferencia
         function runInference() {
             if (!modelTrained) {
@@ -1101,116 +1128,129 @@
                 return;
             }
             
-            // Simular procesamiento
+            // Mostrar que se está procesando
             const inferenceOutput = document.getElementById('inference-output');
             inferenceOutput.innerHTML = '<div style="text-align: center; padding: 20px;">Procesando...</div>';
             
-            // Simular tiempo de procesamiento
-            setTimeout(() => {
-                // Generar resultados simulados
-                const accuracy = 0.85 + Math.random() * 0.1;
-                const recall = 0.80 + Math.random() * 0.15;
-                const f1 = 0.82 + Math.random() * 0.12;
-                const inferenceTime = Math.floor(Math.random() * 500) + 100;
+            // Enviar el archivo al servidor para inferencia
+            const formData = new FormData();
+            formData.append('file', inferenceUpload.files[0]);
+            
+            fetch('/run-inference', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Resultados de la inferencia:', data);
+                // // Actualizar métricas con datos reales
+                // document.getElementById('test-accuracy').textContent = (data.accuracy * 100).toFixed(2) + '%';
+                // document.getElementById('test-recall').textContent = (data.recall * 100).toFixed(2) + '%';
+                // document.getElementById('test-f1').textContent = data.f1.toFixed(3);
+                // document.getElementById('inference-time').textContent = data.inference_time + ' ms';
                 
-                // Actualizar métricas
-                document.getElementById('test-accuracy').textContent = (accuracy * 100).toFixed(2) + '%';
-                document.getElementById('test-recall').textContent = (recall * 100).toFixed(2) + '%';
-                document.getElementById('test-f1').textContent = f1.toFixed(3);
-                document.getElementById('inference-time').textContent = inferenceTime + ' ms';
+                // // Mostrar resultados reales
+                // let resultsHTML = '<h4>Resultados de la Inferencia:</h4>';
                 
-                // Mostrar resultados simulados
-                let resultsHTML = '<h4>Resultados de la Inferencia:</h4>';
+                // // Generar resultados según el tipo de modelo
+                // const modelType = document.getElementById('model-select').value.split('-')[0];
                 
-                // Generar resultados diferentes según el modelo seleccionado
-                const modelType = document.getElementById('model-select').value.split('-')[0];
+                // if (data.predictions && data.predictions.length > 0) {
+                //     if (modelType === 'image') {
+                //         // Modelos de clasificación de imágenes
+                //         resultsHTML += `
+                //             <div style="margin-top: 15px;">
+                //                 <table style="width: 100%; border-collapse: collapse;">
+                //                     <tr style="background-color: #f2f2f2;">
+                //                         <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Clase</th>
+                //                         <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Confianza</th>
+                //                     </tr>
+                //         `;
+                        
+                //         data.predictions.forEach(pred => {
+                //             resultsHTML += `
+                //                 <tr>
+                //                     <td style="padding: 8px; border: 1px solid #ddd;">${pred.class}</td>
+                //                     <td style="padding: 8px; border: 1px solid #ddd;">${pred.confidence.toFixed(2)}</td>
+                //                 </tr>
+                //             `;
+                //         });
+                        
+                //         resultsHTML += `</table></div>`;
+                //     } else if (modelType === 'text') {
+                //         // Modelos de procesamiento de lenguaje natural
+                //         resultsHTML += `
+                //             <div style="margin-top: 15px;">
+                //                 <p><strong>Texto analizado:</strong> "${data.input_text || 'Texto de ejemplo'}"</p>
+                //                 <p><strong>Sentimiento:</strong> ${data.sentiment || 'N/A'} (${(data.sentiment_confidence || 0).toFixed(2)} confianza)</p>
+                //         `;
+                        
+                //         if (data.entities && data.entities.length > 0) {
+                //             resultsHTML += `<p><strong>Entidades detectadas:</strong></p><ul>`;
+                //             data.entities.forEach(entity => {
+                //                 resultsHTML += `<li>${entity.text} (${entity.type})</li>`;
+                //             });
+                //             resultsHTML += `</ul>`;
+                //         }
+                        
+                //         resultsHTML += `</div>`;
+                //     } else if (modelType === 'audio') {
+                //         // Modelos de audio
+                //         resultsHTML += `
+                //             <div style="margin-top: 15px;">
+                //                 <p><strong>Audio analizado:</strong> "${data.filename || 'audio_sample.wav'}" (duración: ${data.duration || '0'}s)</p>
+                //                 <p><strong>Transcripción:</strong> "${data.transcription || 'N/A'}"</p>
+                //                 <p><strong>Confianza de transcripción:</strong> ${(data.transcription_confidence || 0).toFixed(2)}</p>
+                //         `;
+                        
+                //         if (data.features && data.features.length > 0) {
+                //             resultsHTML += `<p><strong>Características detectadas:</strong></p><ul>`;
+                //             data.features.forEach(feature => {
+                //                 resultsHTML += `<li>${feature.name} (${feature.confidence.toFixed(2)} confianza)</li>`;
+                //             });
+                //             resultsHTML += `</ul>`;
+                //         }
+                        
+                //         resultsHTML += `</div>`;
+                //     } else if (modelType === 'video') {
+                //         // Modelos de video
+                //         resultsHTML += `
+                //             <div style="margin-top: 15px;">
+                //                 <p><strong>Video analizado:</strong> "${data.filename || 'video_sample.mp4'}" (duración: ${data.duration || '0'}s)</p>
+                //                 <p><strong>Acción detectada:</strong> ${data.action || 'N/A'} (${(data.action_confidence || 0).toFixed(2)} confianza)</p>
+                //         `;
+                        
+                //         if (data.objects && data.objects.length > 0) {
+                //             resultsHTML += `<p><strong>Objetos detectados:</strong></p><ul>`;
+                //             data.objects.forEach(obj => {
+                //                 resultsHTML += `<li>${obj.name} (${obj.confidence.toFixed(2)} confianza)</li>`;
+                //             });
+                //             resultsHTML += `</ul>`;
+                //         }
+                        
+                //         resultsHTML += `</div>`;
+                //     }
+                // } else {
+                //     // Modelo genérico o sin predicciones específicas
+                //     resultsHTML += `
+                //         <div style="margin-top: 15px;">
+                //             <p>Se procesaron ${data.samples_processed || 0} muestras con éxito.</p>
+                //             <p>Tiempo promedio de procesamiento por muestra: ${data.avg_processing_time || 0} ms</p>
+                //             <p>Precisión global: ${(data.accuracy * 100).toFixed(2)}%</p>
+                //         </div>
+                //     `;
+                // }
                 
-                if (modelType === 'image') {
-                    // Modelos de clasificación de imágenes
-                    resultsHTML += `
-                        <div style="margin-top: 15px;">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr style="background-color: #f2f2f2;">
-                                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Clase</th>
-                                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Confianza</th>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px; border: 1px solid #ddd;">Gato</td>
-                                    <td style="padding: 8px; border: 1px solid #ddd;">${(0.85 + Math.random() * 0.1).toFixed(2)}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px; border: 1px solid #ddd;">Perro</td>
-                                    <td style="padding: 8px; border: 1px solid #ddd;">${(0.08 + Math.random() * 0.05).toFixed(2)}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px; border: 1px solid #ddd;">Pájaro</td>
-                                    <td style="padding: 8px; border: 1px solid #ddd;">${(0.04 + Math.random() * 0.03).toFixed(2)}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px; border: 1px solid #ddd;">Pez</td>
-                                    <td style="padding: 8px; border: 1px solid #ddd;">${(0.02 + Math.random() * 0.02).toFixed(2)}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    `;
-                } else if (modelType === 'text') {
-                    // Modelos de procesamiento de lenguaje natural
-                    resultsHTML += `
-                        <div style="margin-top: 15px;">
-                            <p><strong>Texto analizado:</strong> "Este producto es excelente, lo recomendaría a todos mis amigos."</p>
-                            <p><strong>Sentimiento:</strong> Positivo (${(0.92 + Math.random() * 0.07).toFixed(2)} confianza)</p>
-                            <p><strong>Entidades detectadas:</strong></p>
-                            <ul>
-                                <li>Producto (OBJETO)</li>
-                                <li>Amigos (PERSONA)</li>
-                            </ul>
-                        </div>
-                    `;
-                } else if (modelType === 'audio') {
-                    // Modelos de audio
-                    resultsHTML += `
-                        <div style="margin-top: 15px;">
-                            <p><strong>Audio analizado:</strong> "audio_sample.wav" (duración: 5.2s)</p>
-                            <p><strong>Transcripción:</strong> "Hola, bienvenido a la plataforma de inteligencia artificial."</p>
-                            <p><strong>Confianza de transcripción:</strong> ${(0.88 + Math.random() * 0.1).toFixed(2)}</p>
-                            <p><strong>Características detectadas:</strong></p>
-                            <ul>
-                                <li>Voz masculina (${(0.78 + Math.random() * 0.2).toFixed(2)} confianza)</li>
-                                <li>Ambiente silencioso (${(0.95 + Math.random() * 0.05).toFixed(2)} confianza)</li>
-                            </ul>
-                        </div>
-                    `;
-                } else if (modelType === 'video') {
-                    // Modelos de video
-                    resultsHTML += `
-                        <div style="margin-top: 15px;">
-                            <p><strong>Video analizado:</strong> "video_sample.mp4" (duración: 10.5s)</p>
-                            <p><strong>Acción detectada:</strong> Caminar (${(0.87 + Math.random() * 0.1).toFixed(2)} confianza)</p>
-                            <p><strong>Objetos detectados:</strong></p>
-                            <ul>
-                                <li>Persona (${(0.96 + Math.random() * 0.04).toFixed(2)} confianza)</li>
-                                <li>Automóvil (${(0.82 + Math.random() * 0.1).toFixed(2)} confianza)</li>
-                                <li>Árbol (${(0.75 + Math.random() * 0.15).toFixed(2)} confianza)</li>
-                            </ul>
-                        </div>
-                    `;
-                } else {
-                    // Modelo genérico
-                    resultsHTML += `
-                        <div style="margin-top: 15px;">
-                            <p>Se procesaron ${Math.floor(Math.random() * 100) + 50} muestras con éxito.</p>
-                            <p>Tiempo promedio de procesamiento por muestra: ${Math.floor(Math.random() * 20) + 5} ms</p>
-                            <p>Precisión global: ${(accuracy * 100).toFixed(2)}%</p>
-                        </div>
-                    `;
-                }
-                
-                inferenceOutput.innerHTML = resultsHTML;
-                
-            }, 2000);
+                // inferenceOutput.innerHTML = resultsHTML;
+            })
+            .catch(error => {
+                console.error('Error en inferencia:', error);
+                inferenceOutput.innerHTML = `<div style="text-align: center; padding: 20px; color: red;">Error al procesar la inferencia: ${error.message}</div>`;
+            });
         }
 
-        async function sendOptions(){
+        // Función para enviar opciones al servidor
+        async function sendOptions() {
             const model = document.getElementById('model-select').value;
             const dataSource = document.querySelector('input[name="data-source"]:checked').value;
             const dataset = dataSource === 'server' ? document.getElementById('server-dataset').value : null;
@@ -1233,6 +1273,7 @@
                     contrast: document.getElementById('aug-contrast').checked,
                     shift: document.getElementById('aug-shift').checked
                 } : null;
+            
             const formData = new FormData();
             formData.append('model', model);
             formData.append('dataSource', dataSource);
@@ -1271,46 +1312,137 @@
                 alert('Error al iniciar el entrenamiento');
             }
         }
-        const params = new URLSearchParams(window.location.search);
-        const model = params.get("model");
-        if (model) {
-            const select = document.getElementById("model-select");
-            const option = Array.from(select.options).find(opt => opt.value === model);
-            if (option) {
-                option.selected = true;
-            }
-        }
 
-        let eventSource = null;
-
+        // Función para iniciar el stream de datos de entrenamiento
         function iniciarStream() {
             if (eventSource) {
-                console.log("Stream ya iniciado");
-                return; // Ya está en marcha
+                eventSource.close(); // Cerrar conexión existente si la hay
+                eventSource = null;
             }
 
             eventSource = new EventSource("http://localhost:8080/stream-metrics");
-
+            
             eventSource.onmessage = function(event) {
                 const data = JSON.parse(event.data);
                 console.log("Epoch:", data.epoch, "Accuracy:", data.train_accuracy);
+                
+                // Actualizar el contador de épocas
+                currentEpoch = data.epoch;
+                
+                // Almacenar los datos de entrenamiento
                 trainingData.accuracy.push(data.train_accuracy);
                 trainingData.loss.push(data.train_loss);
                 trainingData.val_accuracy.push(data.val_accuracy);
                 trainingData.val_loss.push(data.val_loss);
-                if (data.test_accuracy !== undefined) {
-                    console.log("🎯 Test Accuracy (final):", data.test_accuracy);
-                    eventSource.close(); // opcional
+                
+                // Actualizar gráficos y progreso
+                updateCharts();
+                updateTrainingProgress();
+                
+                // Verificar si el entrenamiento ha terminado
+                if (data.test_accuracy !== undefined || currentEpoch >= totalEpochs) {
+                    // Entrenamiento completado
+                    trainingInProgress = false;
+                    modelTrained = true;
+                    trainingCompleted = true;
+                    
+                    // Cerrar la conexión
+                    eventSource.close();
+                    eventSource = null;
+                    
+                    // Habilitar inferencia
+                    inferenceSection.style.display = 'block';
+                    noModelMessage.style.display = 'none';
+                    
+                    if (data.test_accuracy !== undefined) {
+                        // Actualizar las métricas finales de prueba
+                        document.getElementById('test-accuracy').textContent = (data.test_accuracy * 100).toFixed(2) + '%';
+                        document.getElementById('test-recall').textContent = (data.test_recall || 0 * 100).toFixed(2) + '%';
+                        document.getElementById('test-f1').textContent = (data.test_f1 || 0).toFixed(3);
+                        for (let i = 0; i < trainingData.accuracy.length; i++) {
+                            metrics.push({
+                                epoch: i + 1,
+                                train_accuracy: trainingData.accuracy[i],
+                                train_loss: trainingData.loss[i],
+                                val_accuracy: trainingData.val_accuracy[i],
+                                val_loss: trainingData.val_loss[i]
+                            });
+                        }
+                    }
+                    
+                    // Notificar al usuario
+                    //alert('¡Entrenamiento completado! El modelo está listo para inferencia.');
                 }
+               
+
             };
 
             eventSource.onerror = function(err) {
                 console.error("Error en el stream:", err);
-                eventSource.close();
-                eventSource = null; // Permite volver a intentarlo si falla
+                // Cerrar la conexión en caso de error
+                if (eventSource) {
+                    eventSource.close();
+                    eventSource = null;
+                }
+                
+                // Si el entrenamiento estaba en progreso, informar al usuario
+                if (trainingInProgress) {
+                    trainingInProgress = false;
+                    alert('Error en la conexión con el servidor. Por favor, intente nuevamente.');
+                }
             };
         }
         
+
+        function downloadJSON(data, filename = 'metrics.json') {
+            console.log(metrics);
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        function downloadCSV(data, filename = 'metrics.csv') {
+            const header = Object.keys(data[0]).join(",");
+            const rows = data.map(row => Object.values(row).join(",")).join("\n");
+            const csv = `${header}\n${rows}`;
+
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        function downloadChartImage(chartId = 'accuracy') {
+            let chart;
+
+            if (chartId === 'accuracy') {
+                chart = window.accuracyChart;
+            } else if (chartId === 'loss') {
+                chart = window.lossChart;
+            } else {
+                console.error("ID de gráfico inválido");
+                return;
+            }
+
+            chart.dataURI().then(({ imgURI, blob }) => {
+                const link = document.createElement("a");
+                link.href = imgURI;
+                link.download = `${chartId}-chart.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+
+
+
 
     </script>
 </body>

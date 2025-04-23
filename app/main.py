@@ -52,10 +52,17 @@ async def get_home(request: Request, model: str = Query(None)):
                 }
         )
 
-@app.get("/datasets", tags=["datasets"])
-async def get_home(request: Request):
+@app.get("/datasets", response_class=HTMLResponse, tags=["datasets"])
+async def get_home(request: Request, dataset: str = Query(None)):
          username = request.cookies.get("usuario")
-         return templates.TemplateResponse("datasets.html", {"request": request, "username": username})
+         return templates.TemplateResponse(
+                "datasets.html",
+                {
+                        "request": request,
+                        "username": username,
+                        "dataset": dataset
+                }
+        )
 
 @app.get("/contenidos", tags=["contenidos"])
 async def get_home(request: Request):
