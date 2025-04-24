@@ -1,0 +1,34 @@
+[
+    { "id": 1, "name": "GPT-3", "type": "text", "task": "generation", "description": "Modelo de lenguaje de gran escala para generación de texto.", "label": "text-gpt3" },
+    { "id": 2, "name": "BERT", "type": "text", "task": "classification", "description": "Modelo de procesamiento de lenguaje natural para clasificación y otras tareas.", "label": "text-bert" },
+    { "id": 3, "name": "T5", "type": "text", "task": "translation", "description": "Modelo de texto a texto que puede realizar traducción, resumen y más.", "label": "text-t5" },
+    { "id": 4, "name": "Pegasus", "type": "text", "task": "summary", "description": "Modelo especializado en generar resúmenes automáticos de textos largos.", "label": "text-pegasus" },
+    { "id": 5, "name": "RoBERTa", "type": "text", "task": "classification", "description": "Modelo robusto optimizado a partir de BERT para tareas de clasificación.", "label": "text-roberta" },
+    { "id": 6, "name": "XLNet", "type": "text", "task": "generation", "description": "Modelo de lenguaje autoregresivo que mejora la generación de texto.", "label": "text-xlnet" },
+    { "id": 7, "name": "MarianMT", "type": "text", "task": "translation", "description": "Modelo multilingüe de traducción entrenado por Facebook AI.", "label": "text-marianmt" },
+    { "id": 8, "name": "Bart", "type": "text", "task": "summary", "description": "Modelo encoder-decoder versátil, eficaz para resúmenes y generación.", "label": "text-bart" },
+
+    { "id": 9, "name": "DALL-E", "type": "image", "task": "generation", "description": "Modelo para generar imágenes a partir de descripciones textuales.", "label": "image-dalle" },
+    { "id": 10, "name": "ResNet", "type": "image", "task": "classification", "description": "Red neuronal convolucional para clasificación de imágenes.", "label": "image-resnet" },
+    { "id": 11, "name": "YOLOv5", "type": "image", "task": "detection", "description": "Modelo de detección en tiempo real de objetos en imágenes.", "label": "image-yolov5" },
+    { "id": 12, "name": "U-Net", "type": "image", "task": "segmentation", "description": "Modelo ampliamente utilizado para segmentación semántica de imágenes.", "label": "image-unet" },
+    { "id": 13, "name": "StyleGAN2", "type": "image", "task": "generation", "description": "Modelo generativo de imágenes realistas, especialmente rostros humanos.", "label": "image-stylegan2" },
+    { "id": 14, "name": "EfficientNet", "type": "image", "task": "classification", "description": "Modelo eficiente y preciso para clasificación de imágenes.", "label": "image-efficientnet" },
+    { "id": 15, "name": "Mask R-CNN", "type": "image", "task": "segmentation", "description": "Modelo que combina detección de objetos con segmentación precisa.", "label": "image-maskrcnn" },
+    { "id": 16, "name": "Faster R-CNN", "type": "image", "task": "detection", "description": "Modelo de detección de objetos preciso y popular en visión por computador.", "label": "image-fasterrcnn" },
+
+    { "id": 17, "name": "Whisper", "type": "audio", "task": "transcription", "description": "Modelo de OpenAI para transcripción automática y multilingüe de audio.", "label": "audio-whisper" },
+    { "id": 18, "name": "WaveNet", "type": "audio", "task": "generation", "description": "Modelo generativo para síntesis de voz realista.", "label": "audio-wavenet" },
+    { "id": 19, "name": "DeepSpeech", "type": "audio", "task": "recognition", "description": "Sistema de reconocimiento automático de voz desarrollado por Mozilla.", "label": "audio-deepspeech" },
+    { "id": 20, "name": "YAMNet", "type": "audio", "task": "classification", "description": "Modelo basado en MobileNet para clasificar sonidos ambientales.", "label": "audio-yamnet" },
+    { "id": 21, "name": "Jukebox", "type": "audio", "task": "generation", "description": "Modelo generativo de OpenAI para creación de música con voz y letra.", "label": "audio-jukebox" },
+    { "id": 22, "name": "HuBERT", "type": "audio", "task": "transcription", "description": "Modelo auto-supervisado para extracción de características de voz.", "label": "audio-hubert" },
+
+    { "id": 23, "name": "SlowFast", "type": "video", "task": "classification", "description": "Modelo que procesa diferentes frecuencias temporales para analizar vídeos.", "label": "video-slowfast" },
+    { "id": 24, "name": "I3D", "type": "video", "task": "classification", "description": "Modelo inflado 3D para reconocimiento de acciones en vídeos.", "label": "video-i3d" },
+    { "id": 25, "name": "ST-GCN", "type": "video", "task": "detection", "description": "Modelo basado en grafos para análisis de acciones humanas en vídeos.", "label": "video-stgcn" },
+    { "id": 26, "name": "SiamMask", "type": "video", "task": "tracking", "description": "Modelo eficiente para seguimiento de objetos en vídeos en tiempo real.", "label": "video-siammask" },
+    { "id": 27, "name": "Vid2Vid", "type": "video", "task": "generation", "description": "Modelo para generación de vídeo a partir de diferentes fuentes visuales.", "label": "video-vid2vid" },
+    { "id": 28, "name": "Tracktor", "type": "video", "task": "tracking", "description": "Modelo de seguimiento basado en regresión de bounding boxes desde detecciones previas.", "label": "video-tracktor" },
+    { "id": 29, "name": "RT-DETR", "type": "video", "task": "detection", "description": "Detección de objetos en tiempo real basado en Transformer.", "label": "video-rtdetr" }
+]

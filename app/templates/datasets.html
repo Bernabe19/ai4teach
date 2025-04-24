@@ -180,7 +180,7 @@
         <nav class="dataset-nav">
             <ul class="dataset-types">
                 <li>
-                    <span onclick="onClickSpan(type='text')">Texto</span>
+                    <span onclick="onClickSpanType(type='text')">Texto</span>
                     <ul class="dataset-tasks">
                         <li><a onclick="onClickTypeAndTask('text', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('text', 'generation')" href="#">Generación</a></li>
@@ -189,7 +189,7 @@
                     </ul>
                 </li>
                 <li>
-                    <span onclick="onClickSpan(type='image')">Imagen</span>
+                    <span onclick="onClickSpanType(type='image')">Imagen</span>
                     <ul class="dataset-tasks">
                         <li><a onclick="onClickTypeAndTask('image', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('image', 'generation')" href="#">Generación</a></li>
@@ -198,7 +198,7 @@
                     </ul>
                 </li>
                 <li>
-                    <span onclick="onClickSpan(type='audio')">Audio</span>
+                    <span onclick="onClickSpanType(type='audio')">Audio</span>
                     <ul class="dataset-tasks">
                         <li><a onclick="onClickTypeAndTask('audio', 'recognition')" href="#">Reconocimiento</a></li>
                         <li><a onclick="onClickTypeAndTask('audio', 'generation')" href="#">Generación</a></li>
@@ -207,7 +207,7 @@
                     </ul>
                 </li>
                 <li>
-                    <span onclick="onClickSpan(type='video')">Video</span>
+                    <span onclick="onClickSpanType(type='video')">Video</span>
                     <ul class="dataset-tasks">
                         <li><a onclick="onClickTypeAndTask('video', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('video', 'detection')" href="#">Detección</a></li>
@@ -244,39 +244,21 @@
     </div>
 
     <script>
-        // Datos de ejemplo de los modelos
-        const datasets = [
-            // TEXT
-            { id: 1, name: 'IMDB Reviews', type: 'text', task: 'classification', description: 'Dataset de reseñas de películas etiquetadas como positivas o negativas.' },
-            { id: 2, name: 'Common Crawl', type: 'text', task: 'generation', description: 'Gran recopilación de datos web utilizada para entrenar modelos de lenguaje.' },
-            { id: 3, name: 'WMT14 EN-DE', type: 'text', task: 'translation', description: 'Conjunto de datos para tareas de traducción automática del inglés al alemán.' },
-            { id: 4, name: 'CNN/DailyMail', type: 'text', task: 'summary', description: 'Dataset con noticias y resúmenes utilizados para entrenar modelos de resumen.' },
-            { id: 5, name: 'AG News', type: 'text', task: 'classification', description: 'Colección de artículos periodísticos categorizados en temas como negocios, ciencia, deportes y tecnología.' },
+        let datasets = [];
 
-            // IMAGE
-            { id: 6, name: 'CIFAR-10', type: 'image', task: 'classification', description: 'Pequeño dataset con 60,000 imágenes divididas en 10 clases comunes.' },
-            { id: 7, name: 'ImageNet', type: 'image', task: 'classification', description: 'Extenso dataset con millones de imágenes etiquetadas en miles de categorías.' },
-            { id: 8, name: 'COCO', type: 'image', task: 'detection', description: 'Dataset con imágenes anotadas para detección de objetos, segmentación y captioning.' },
-            { id: 9, name: 'Cityscapes', type: 'image', task: 'segmentation', description: 'Imágenes urbanas etiquetadas píxel a píxel para segmentación semántica.' },
-            { id: 10, name: 'LSUN', type: 'image', task: 'generation', description: 'Gran colección de escenas utilizadas para tareas de generación y clasificación de imágenes.' },
-            { id: 11, name: 'ADE20K', type: 'image', task: 'segmentation', description: 'Dataset con anotaciones exhaustivas para segmentación de escenas complejas.' },
+        async function loadDatasets() {
+        try {
+            const response = await fetch('/get-datasets');
+            const data = await response.json();
+            console.log(data);
+            datasets = data;
+            renderDatasets(datasets);
+        } catch (error) {
+            console.error('Error cargando JSON:', error);
+        }
+        }
 
-            // AUDIO
-            { id: 12, name: 'LibriSpeech', type: 'audio', task: 'transcription', description: 'Corpus de audio basado en audiolibros de dominio público para reconocimiento de voz.' },
-            { id: 13, name: 'ESC-50', type: 'audio', task: 'classification', description: 'Colección de grabaciones ambientales clasificadas en categorías como animales, naturaleza o humanos.' },
-            { id: 14, name: 'VCTK', type: 'audio', task: 'generation', description: 'Dataset con grabaciones de múltiples hablantes para síntesis de voz y entrenamiento TTS.' },
-            { id: 15, name: 'TED-LIUM', type: 'audio', task: 'transcription', description: 'Conjunto de charlas TED con transcripciones alineadas para reconocimiento de voz.' },
-            { id: 16, name: 'FSD50K', type: 'audio', task: 'recognition', description: 'Gran conjunto de datos con sonidos etiquetados para tareas de clasificación y detección.' },
-
-            // VIDEO
-            { id: 17, name: 'UCF101', type: 'video', task: 'classification', description: 'Dataset con 13,000 vídeos categorizados en 101 tipos de acciones humanas.' },
-            { id: 18, name: 'ActivityNet', type: 'video', task: 'classification', description: 'Base de datos extensa con vídeos etiquetados según actividades cotidianas.' },
-            { id: 19, name: 'AVA', type: 'video', task: 'detection', description: 'Dataset anotado con acciones humanas frame por frame en vídeos de películas.' },
-            { id: 20, name: 'OTB100', type: 'video', task: 'tracking', description: 'Benchmark para algoritmos de seguimiento de objetos en vídeos.' },
-            { id: 21, name: 'Kinetics-700', type: 'video', task: 'classification', description: 'Gran conjunto de vídeos con anotaciones sobre tipos de acciones humanas.' },
-            { id: 22, name: 'YouTube-VIS', type: 'video', task: 'detection', description: 'Dataset para segmentación y seguimiento de instancias en vídeos.' },
-            { id: 23, name: 'BAIR Robot Pushing', type: 'video', task: 'generation', description: 'Dataset de vídeo con interacciones robóticas utilizado para entrenar modelos de predicción y generación de vídeo condicional.'}
-        ];
+        loadDatasets();
 
 
 
@@ -316,7 +298,7 @@
             return datasets.filter(dataset => dataset.type === type && dataset.task === task);
         }
 
-        function onClickSpan(type) {
+        function onClickSpanType(type) {
             const filteredDatasets = filterByType(type);
             renderDatasets(filteredDatasets);
         }
@@ -343,7 +325,11 @@
         }
 
         function selectDataset(datasetId) {
-            alert(`dataset ${datasetId} seleccionado`);
+            const dataset = datasets.find(m => m.id === datasetId);
+            console.log(dataset);
+            if (dataset) {
+                    window.location.href = `entrenamiento?dataset=${dataset.label}`;
+            }
         }
 
         // Renderizar todos los modelos al cargar la página

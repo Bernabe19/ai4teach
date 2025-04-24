@@ -8,6 +8,7 @@ import time
 import json
 from PIL import Image
 from io import BytesIO
+from pathlib import Path
 import numpy as np
 import gc
 
@@ -320,3 +321,24 @@ async def clear_memory():
     gc.collect()
     
     return JSONResponse({"message": "Memoria liberada"})
+
+
+@router.get("/get-models")
+async def get_models():
+    try:
+        file_path = Path("db/models.json")  # Ajusta esta ruta según tu estructura
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return JSONResponse(content=data)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+@router.get("/import-model")
+async def import_model(model_name: str):
+    try:
+        file_path = Path(f"db/models/{model_name}.json")  # Ajusta esta ruta según tu estructura
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return JSONResponse(content=data)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)

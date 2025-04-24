@@ -367,29 +367,29 @@ html >
                     <label for="model-select">Seleccionar Modelo:</label>
                     <select id="model-select" class="form-control">
                         <option value="">-- Seleccione un modelo --</option>
-                        <optgroup label="Imagen">
+                        <!-- <optgroup label="Imagen">
                             <option value="image-resnet50">ResNet-50</option>
                             <option value="image-vgg16">VGG-16</option>
                             <option value="image-mobilenet">MobileNet</option>
                             <option value="image-efficientnet">EfficientNet</option>
                             <option value="image-yolo">YOLO v5</option>
-                        </optgroup>
-                        <optgroup label="Texto">
+                        </optgroup> -->
+                        <!-- <optgroup label="Texto">
                             <option value="text-bert">BERT</option>
                             <option value="text-gpt2">GPT-2</option>
                             <option value="text-roberta">RoBERTa</option>
                             <option value="text-t5">T5</option>
-                        </optgroup>
-                        <optgroup label="Audio">
+                        </optgroup> -->
+                        <!-- <optgroup label="Audio">
                             <option value="audio-wavenet">WaveNet</option>
                             <option value="audio-deepspeech">DeepSpeech</option>
                             <option value="audio-whisper">Whisper</option>
-                        </optgroup>
-                        <optgroup label="Video">
+                        </optgroup> -->
+                        <!-- <optgroup label="Video">
                             <option value="video-c3d">C3D</option>
                             <option value="video-i3d">I3D</option>
                             <option value="video-slowfast">SlowFast</option>
-                        </optgroup>
+                        </optgroup> -->
                     </select>
                 </div>
                 
@@ -410,7 +410,7 @@ html >
                     <div id="server-data-source" class="data-source-content active">
                         <select id="server-dataset" class="form-control">
                             <option value="">-- Seleccione un conjunto de datos --</option>
-                            <optgroup label="Imagen">
+                            <!-- <optgroup label="Imagen">
                                 <option value="mnist">MNIST (Clasificación)</option>
                                 <option value="imagenet">ImageNet (Clasificación)</option>
                                 <option value="coco">COCO (Detección)</option>
@@ -431,7 +431,7 @@ html >
                                 <option value="ucf101">UCF101 (Acciones)</option>
                                 <option value="kinetics">Kinetics-400 (Acciones)</option>
                                 <option value="hmdb51">HMDB51 (Acciones)</option>
-                            </optgroup>
+                            </optgroup> -->
                         </select>
                     </div>
                     
@@ -623,17 +623,17 @@ html >
                         <h3 class="metrics-title">Métricas de Evaluación</h3>
                         <div class="metrics-grid">
                             <div class="metric-card">
-                                <div class="metric-label">Precisión</div>
-                                <div class="metric-value" id="test-accuracy">0.00%</div>
+                                <div class="metric-label">Confianza</div>
+                                <div class="metric-value" id="inference-accuracy">0.00%</div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-label">Recall</div>
-                                <div class="metric-value" id="test-recall">0.00%</div>
+                                <div class="metric-label">Clase predicha</div>
+                                <div class="metric-value" id="predicted-class">0.00%</div>
                             </div>
-                            <div class="metric-card">
+                            <!-- <div class="metric-card">
                                 <div class="metric-label">F1-Score</div>
                                 <div class="metric-value" id="test-f1">0.000</div>
-                            </div>
+                            </div> -->
                             <div class="metric-card">
                                 <div class="metric-label">Tiempo de Inferencia</div>
                                 <div class="metric-value" id="inference-time">0 ms</div>
@@ -686,6 +686,45 @@ html >
         const dataSourceRadios = document.querySelectorAll('input[name="data-source"]');
         const serverDataSource = document.getElementById('server-data-source');
         const uploadDataSource = document.getElementById('upload-data-source');
+
+        function syncModelDataset(){
+                document.getElementById('model-select').addEventListener('change', function() {
+                    const modelType = this.value.split('-')[0]; // Obtener el tipo (image, text, audio, video)
+                    const serverDataset = document.getElementById('server-dataset');
+                    
+                    // Mostrar todos los optgroups
+                    Array.from(serverDataset.getElementsByTagName('optgroup')).forEach(optgroup => {
+                        optgroup.style.display = '';
+                    });
+                    
+                    // Si se seleccionó un modelo, filtrar los datasets
+                    if (modelType) {
+                        // Mapear el tipo de modelo al label del optgroup
+                        const typeToLabel = {
+                            'image': 'Imagen',
+                            'text': 'Texto',
+                            'audio': 'Audio',
+                            'video': 'Video'
+                        };
+                        
+                        // Ocultar optgroups que no coincidan con el tipo de modelo
+                        Array.from(serverDataset.getElementsByTagName('optgroup')).forEach(optgroup => {
+                            if (optgroup.label !== typeToLabel[modelType]) {
+                                optgroup.style.display = 'none';
+                            }
+                        });
+                        
+                        // Seleccionar el primer dataset del tipo correspondiente
+                        const firstOption = Array.from(serverDataset.options).find(option => {
+                            return option.parentNode.label === typeToLabel[modelType] && option.value;
+                        });
+                        
+                        if (firstOption) {
+                            serverDataset.value = firstOption.value;
+                        }
+                    }
+                });
+            }
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
@@ -754,58 +793,11 @@ html >
             runInferenceBtn.addEventListener('click', runInference);
             
             // Filtrar datasets según el modelo seleccionado
-            document.getElementById('model-select').addEventListener('change', function() {
-                const modelType = this.value.split('-')[0]; // Obtener el tipo (image, text, audio, video)
-                const serverDataset = document.getElementById('server-dataset');
-                
-                // Mostrar todos los optgroups
-                Array.from(serverDataset.getElementsByTagName('optgroup')).forEach(optgroup => {
-                    optgroup.style.display = '';
-                });
-                
-                // Si se seleccionó un modelo, filtrar los datasets
-                if (modelType) {
-                    // Mapear el tipo de modelo al label del optgroup
-                    const typeToLabel = {
-                        'image': 'Imagen',
-                        'text': 'Texto',
-                        'audio': 'Audio',
-                        'video': 'Video'
-                    };
-                    
-                    // Ocultar optgroups que no coincidan con el tipo de modelo
-                    Array.from(serverDataset.getElementsByTagName('optgroup')).forEach(optgroup => {
-                        if (optgroup.label !== typeToLabel[modelType]) {
-                            optgroup.style.display = 'none';
-                        }
-                    });
-                    
-                    // Seleccionar el primer dataset del tipo correspondiente
-                    const firstOption = Array.from(serverDataset.options).find(option => {
-                        return option.parentNode.label === typeToLabel[modelType] && option.value;
-                    });
-                    
-                    if (firstOption) {
-                        serverDataset.value = firstOption.value;
-                    }
-                }
-            });
+            //syncModelDataset();
 
             // Inicializar los gráficos
             initCharts();
             
-            // Comprobar parámetros URL
-            const params = new URLSearchParams(window.location.search);
-            const model = params.get("model");
-            if (model) {
-                const select = document.getElementById("model-select");
-                const option = Array.from(select.options).find(opt => opt.value === model);
-                if (option) {
-                    option.selected = true;
-                    // Disparar el evento change para actualizar los datasets disponibles
-                    select.dispatchEvent(new Event('change'));
-                }
-            }
         });
 
         // Función para inicializar los gráficos
@@ -1144,104 +1136,105 @@ html >
             .then(data => {
                 console.log('Resultados de la inferencia:', data);
                 // // Actualizar métricas con datos reales
-                // document.getElementById('test-accuracy').textContent = (data.accuracy * 100).toFixed(2) + '%';
-                // document.getElementById('test-recall').textContent = (data.recall * 100).toFixed(2) + '%';
+                document.getElementById('inference-accuracy').textContent = (data.confidence * 100).toFixed(2) + '%';
+                document.getElementById('predicted-class').textContent = (data.predicted_class);
                 // document.getElementById('test-f1').textContent = data.f1.toFixed(3);
-                // document.getElementById('inference-time').textContent = data.inference_time + ' ms';
+                document.getElementById('inference-time').textContent = data.inference_time + ' ms';
                 
-                // // Mostrar resultados reales
-                // let resultsHTML = '<h4>Resultados de la Inferencia:</h4>';
+                // Mostrar resultados reales
+                let resultsHTML = '<h4>Resultados de la Inferencia:</h4>';
                 
-                // // Generar resultados según el tipo de modelo
-                // const modelType = document.getElementById('model-select').value.split('-')[0];
+                // Generar resultados según el tipo de modelo
+                const modelType = document.getElementById('model-select').value.split('-')[0];
+                console.log('Tipo de modelo:', modelType);
+                console.log(data.confidences)
+                console.log(data.confidences.length)
+                if (data.confidences && Object.keys(data.confidences).length > 0) {
+                    if (modelType === 'image') {
+                        // Modelos de clasificación de imágenes
+                        resultsHTML += `
+                            <div style="margin-top: 15px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr style="background-color: #f2f2f2;">
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Clase</th>
+                                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Confianza</th>
+                                    </tr>
+                        `;
+                        for (key in data.confidences) {
+                            resultsHTML += `
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${key}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${data.confidences[key].toFixed(3)}</td>
+                                </tr>
+                            `;
+                        }
+                        
+                        resultsHTML += `</table></div>`;
+                    } else if (modelType === 'text') {
+                        // Modelos de procesamiento de lenguaje natural
+                        resultsHTML += `
+                            <div style="margin-top: 15px;">
+                                <p><strong>Texto analizado:</strong> "${data.input_text || 'Texto de ejemplo'}"</p>
+                                <p><strong>Sentimiento:</strong> ${data.sentiment || 'N/A'} (${(data.sentiment_confidence || 0).toFixed(2)} confianza)</p>
+                        `;
+                        
+                        if (data.entities && data.entities.length > 0) {
+                            resultsHTML += `<p><strong>Entidades detectadas:</strong></p><ul>`;
+                            data.entities.forEach(entity => {
+                                resultsHTML += `<li>${entity.text} (${entity.type})</li>`;
+                            });
+                            resultsHTML += `</ul>`;
+                        }
+                        
+                        resultsHTML += `</div>`;
+                    } else if (modelType === 'audio') {
+                        // Modelos de audio
+                        resultsHTML += `
+                            <div style="margin-top: 15px;">
+                                <p><strong>Audio analizado:</strong> "${data.filename || 'audio_sample.wav'}" (duración: ${data.duration || '0'}s)</p>
+                                <p><strong>Transcripción:</strong> "${data.transcription || 'N/A'}"</p>
+                                <p><strong>Confianza de transcripción:</strong> ${(data.transcription_confidence || 0).toFixed(2)}</p>
+                        `;
+                        
+                        if (data.features && data.features.length > 0) {
+                            resultsHTML += `<p><strong>Características detectadas:</strong></p><ul>`;
+                            data.features.forEach(feature => {
+                                resultsHTML += `<li>${feature.name} (${feature.confidence.toFixed(2)} confianza)</li>`;
+                            });
+                            resultsHTML += `</ul>`;
+                        }
+                        
+                        resultsHTML += `</div>`;
+                    } else if (modelType === 'video') {
+                        // Modelos de video
+                        resultsHTML += `
+                            <div style="margin-top: 15px;">
+                                <p><strong>Video analizado:</strong> "${data.filename || 'video_sample.mp4'}" (duración: ${data.duration || '0'}s)</p>
+                                <p><strong>Acción detectada:</strong> ${data.action || 'N/A'} (${(data.action_confidence || 0).toFixed(2)} confianza)</p>
+                        `;
+                        
+                        if (data.objects && data.objects.length > 0) {
+                            resultsHTML += `<p><strong>Objetos detectados:</strong></p><ul>`;
+                            data.objects.forEach(obj => {
+                                resultsHTML += `<li>${obj.name} (${obj.confidence.toFixed(2)} confianza)</li>`;
+                            });
+                            resultsHTML += `</ul>`;
+                        }
+                        
+                        resultsHTML += `</div>`;
+                    }
+                } else {
+                    // Modelo genérico o sin predicciones específicas
+                    resultsHTML += `
+                        <div style="margin-top: 15px;">
+                            <p>Se procesaron ${data.samples_processed || 0} muestras con éxito.</p>
+                            <p>Tiempo promedio de procesamiento por muestra: ${data.avg_processing_time || 0} ms</p>
+                            <p>Precisión global: ${(data.accuracy * 100).toFixed(2)}%</p>
+                        </div>
+                    `;
+                }
                 
-                // if (data.predictions && data.predictions.length > 0) {
-                //     if (modelType === 'image') {
-                //         // Modelos de clasificación de imágenes
-                //         resultsHTML += `
-                //             <div style="margin-top: 15px;">
-                //                 <table style="width: 100%; border-collapse: collapse;">
-                //                     <tr style="background-color: #f2f2f2;">
-                //                         <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Clase</th>
-                //                         <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Confianza</th>
-                //                     </tr>
-                //         `;
-                        
-                //         data.predictions.forEach(pred => {
-                //             resultsHTML += `
-                //                 <tr>
-                //                     <td style="padding: 8px; border: 1px solid #ddd;">${pred.class}</td>
-                //                     <td style="padding: 8px; border: 1px solid #ddd;">${pred.confidence.toFixed(2)}</td>
-                //                 </tr>
-                //             `;
-                //         });
-                        
-                //         resultsHTML += `</table></div>`;
-                //     } else if (modelType === 'text') {
-                //         // Modelos de procesamiento de lenguaje natural
-                //         resultsHTML += `
-                //             <div style="margin-top: 15px;">
-                //                 <p><strong>Texto analizado:</strong> "${data.input_text || 'Texto de ejemplo'}"</p>
-                //                 <p><strong>Sentimiento:</strong> ${data.sentiment || 'N/A'} (${(data.sentiment_confidence || 0).toFixed(2)} confianza)</p>
-                //         `;
-                        
-                //         if (data.entities && data.entities.length > 0) {
-                //             resultsHTML += `<p><strong>Entidades detectadas:</strong></p><ul>`;
-                //             data.entities.forEach(entity => {
-                //                 resultsHTML += `<li>${entity.text} (${entity.type})</li>`;
-                //             });
-                //             resultsHTML += `</ul>`;
-                //         }
-                        
-                //         resultsHTML += `</div>`;
-                //     } else if (modelType === 'audio') {
-                //         // Modelos de audio
-                //         resultsHTML += `
-                //             <div style="margin-top: 15px;">
-                //                 <p><strong>Audio analizado:</strong> "${data.filename || 'audio_sample.wav'}" (duración: ${data.duration || '0'}s)</p>
-                //                 <p><strong>Transcripción:</strong> "${data.transcription || 'N/A'}"</p>
-                //                 <p><strong>Confianza de transcripción:</strong> ${(data.transcription_confidence || 0).toFixed(2)}</p>
-                //         `;
-                        
-                //         if (data.features && data.features.length > 0) {
-                //             resultsHTML += `<p><strong>Características detectadas:</strong></p><ul>`;
-                //             data.features.forEach(feature => {
-                //                 resultsHTML += `<li>${feature.name} (${feature.confidence.toFixed(2)} confianza)</li>`;
-                //             });
-                //             resultsHTML += `</ul>`;
-                //         }
-                        
-                //         resultsHTML += `</div>`;
-                //     } else if (modelType === 'video') {
-                //         // Modelos de video
-                //         resultsHTML += `
-                //             <div style="margin-top: 15px;">
-                //                 <p><strong>Video analizado:</strong> "${data.filename || 'video_sample.mp4'}" (duración: ${data.duration || '0'}s)</p>
-                //                 <p><strong>Acción detectada:</strong> ${data.action || 'N/A'} (${(data.action_confidence || 0).toFixed(2)} confianza)</p>
-                //         `;
-                        
-                //         if (data.objects && data.objects.length > 0) {
-                //             resultsHTML += `<p><strong>Objetos detectados:</strong></p><ul>`;
-                //             data.objects.forEach(obj => {
-                //                 resultsHTML += `<li>${obj.name} (${obj.confidence.toFixed(2)} confianza)</li>`;
-                //             });
-                //             resultsHTML += `</ul>`;
-                //         }
-                        
-                //         resultsHTML += `</div>`;
-                //     }
-                // } else {
-                //     // Modelo genérico o sin predicciones específicas
-                //     resultsHTML += `
-                //         <div style="margin-top: 15px;">
-                //             <p>Se procesaron ${data.samples_processed || 0} muestras con éxito.</p>
-                //             <p>Tiempo promedio de procesamiento por muestra: ${data.avg_processing_time || 0} ms</p>
-                //             <p>Precisión global: ${(data.accuracy * 100).toFixed(2)}%</p>
-                //         </div>
-                //     `;
-                // }
-                
-                // inferenceOutput.innerHTML = resultsHTML;
+                inferenceOutput.innerHTML = resultsHTML;
             })
             .catch(error => {
                 console.error('Error en inferencia:', error);
@@ -1357,8 +1350,8 @@ html >
                     if (data.test_accuracy !== undefined) {
                         // Actualizar las métricas finales de prueba
                         document.getElementById('test-accuracy').textContent = (data.test_accuracy * 100).toFixed(2) + '%';
-                        document.getElementById('test-recall').textContent = (data.test_recall || 0 * 100).toFixed(2) + '%';
-                        document.getElementById('test-f1').textContent = (data.test_f1 || 0).toFixed(3);
+                        document.getElementById('predicted-class').textContent = (data.test_recall || 0 * 100).toFixed(2) + '%';
+                        // document.getElementById('test-f1').textContent = (data.test_f1 || 0).toFixed(3);
                         for (let i = 0; i < trainingData.accuracy.length; i++) {
                             metrics.push({
                                 epoch: i + 1,
@@ -1441,7 +1434,106 @@ html >
             });
         }
 
+        let datasets = [];
 
+        async function loadDat() {
+            try {
+                const response = await fetch('/get-datasets');
+                const data = await response.json();
+                console.log(data);
+                datasets = data;
+                loadDatasets();
+            } catch (error) {
+                console.error('Error cargando JSON:', error);
+            }
+        }
+
+        let models = [];
+
+        async function loadMod() {
+            try {
+                const response = await fetch('/get-models');
+                const data = await response.json();
+                console.log(data);
+                models = data;
+                loadModels();
+            } catch (error) {
+                console.error('Error cargando JSON:', error);
+            }
+        }
+
+        function loadModels() {
+            const modelSelect = document.getElementById('model-select');
+            const modelTypes = ["image", "text", "audio", "video"];
+            
+            modelTypes.forEach(type => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.setAttribute('label', capitalizeFirstLetter(type));
+                
+                models.filter(model => model.type === type).forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.label;
+                    option.textContent = model.name;
+                    optgroup.appendChild(option);
+                });
+                
+                modelSelect.appendChild(optgroup);
+            });
+            const params = new URLSearchParams(window.location.search);
+            const model = params.get("model");
+            if (model) {
+                const select = document.getElementById("model-select");
+                const option = Array.from(select.options).find(opt => opt.value === model);
+                if (option) {
+                    option.selected = true;
+                    // Disparar el evento change para actualizar los datasets disponibles
+                    select.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+
+    // Función para cargar los datasets en el select correspondiente
+        function loadDatasets() {
+            const datasetSelect = document.getElementById('server-dataset');
+            const datasetTypes = ["image", "text", "audio", "video"];
+            
+            datasetTypes.forEach(type => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.setAttribute('label', capitalizeFirstLetter(type));
+                
+                datasets.filter(dataset => dataset.type === type).forEach(dataset => {
+                    const option = document.createElement('option');
+                    option.value = dataset.label;
+                    option.textContent = dataset.name;
+                    optgroup.appendChild(option);
+                });
+                
+                datasetSelect.appendChild(optgroup);
+            });
+            const params = new URLSearchParams(window.location.search);
+            const dataset = params.get("dataset");
+            if (dataset) {
+                const select = document.getElementById("server-dataset");
+                const option = Array.from(select.options).find(opt => opt.value === dataset);
+                if (option) {
+                    option.selected = true;
+                    // Disparar el evento change para actualizar los datasets disponibles
+                    select.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+
+        // Función auxiliar para capitalizar la primera letra de cada palabra
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Cargar modelos y datasets al cargar la página
+        window.onload = function() {
+            loadMod();
+            loadDat();
+            // syncModelDataset();
+        };
 
 
     </script>

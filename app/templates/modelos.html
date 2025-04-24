@@ -180,7 +180,7 @@
         <nav class="model-nav">
             <ul class="model-types">
                 <li>
-                    <span onclick="onClickSpan(type='text')">Texto</span>
+                    <span onclick="onClickSpanType(type='text')">Texto</span>
                     <ul class="model-tasks">
                         <li><a onclick="onClickTypeAndTask('text', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('text', 'generation')" href="#">Generación</a></li>
@@ -189,7 +189,7 @@
                     </ul>
                 </li>
                 <li>
-                    <span onclick="onClickSpan(type='image')">Imagen</span>
+                    <span onclick="onClickSpanType(type='image')">Imagen</span>
                     <ul class="model-tasks">
                         <li><a onclick="onClickTypeAndTask('image', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('image', 'generation')" href="#">Generación</a></li>
@@ -198,7 +198,7 @@
                     </ul>
                 </li>
                 <li>
-                    <span onclick="onClickSpan(type='audio')">Audio</span>
+                    <span onclick="onClickSpanType(type='audio')">Audio</span>
                     <ul class="model-tasks">
                         <li><a onclick="onClickTypeAndTask('audio', 'recognition')" href="#">Reconocimiento</a></li>
                         <li><a onclick="onClickTypeAndTask('audio', 'generation')" href="#">Generación</a></li>
@@ -207,7 +207,7 @@
                     </ul>
                 </li>
                 <li>
-                    <span onclick="onClickSpan(type='video')">Video</span>
+                    <span onclick="onClickSpanType(type='video')">Video</span>
                     <ul class="model-tasks">
                         <li><a onclick="onClickTypeAndTask('video', 'classification')" href="#">Clasificación</a></li>
                         <li><a onclick="onClickTypeAndTask('video', 'detection')" href="#">Detección</a></li>
@@ -245,44 +245,22 @@
 
     <script>
         // Datos de ejemplo de los modelos
-        const models = [
-            // TEXT
-            { id: 1, name: 'GPT-3', type: 'text', task: 'generation', description: 'Modelo de lenguaje de gran escala para generación de texto.' },
-            { id: 2, name: 'BERT', type: 'text', task: 'classification', description: 'Modelo de procesamiento de lenguaje natural para clasificación y otras tareas.' },
-            { id: 3, name: 'T5', type: 'text', task: 'translation', description: 'Modelo de texto a texto que puede realizar traducción, resumen y más.' },
-            { id: 4, name: 'Pegasus', type: 'text', task: 'summary', description: 'Modelo especializado en generar resúmenes automáticos de textos largos.' },
-            { id: 5, name: 'RoBERTa', type: 'text', task: 'classification', description: 'Modelo robusto optimizado a partir de BERT para tareas de clasificación.' },
-            { id: 6, name: 'XLNet', type: 'text', task: 'generation', description: 'Modelo de lenguaje autoregresivo que mejora la generación de texto.' },
-            { id: 7, name: 'MarianMT', type: 'text', task: 'translation', description: 'Modelo multilingüe de traducción entrenado por Facebook AI.' },
-            { id: 8, name: 'Bart', type: 'text', task: 'summary', description: 'Modelo encoder-decoder versátil, eficaz para resúmenes y generación.' },
+        let models = [];
 
-            // IMAGE
-            { id: 9, name: 'DALL-E', type: 'image', task: 'generation', description: 'Modelo para generar imágenes a partir de descripciones textuales.' },
-            { id: 10, name: 'ResNet', type: 'image', task: 'classification', description: 'Red neuronal convolucional para clasificación de imágenes.' },
-            { id: 11, name: 'YOLOv5', type: 'image', task: 'detection', description: 'Modelo de detección en tiempo real de objetos en imágenes.' },
-            { id: 12, name: 'U-Net', type: 'image', task: 'segmentation', description: 'Modelo ampliamente utilizado para segmentación semántica de imágenes.' },
-            { id: 13, name: 'StyleGAN2', type: 'image', task: 'generation', description: 'Modelo generativo de imágenes realistas, especialmente rostros humanos.' },
-            { id: 14, name: 'EfficientNet', type: 'image', task: 'classification', description: 'Modelo eficiente y preciso para clasificación de imágenes.' },
-            { id: 15, name: 'Mask R-CNN', type: 'image', task: 'segmentation', description: 'Modelo que combina detección de objetos con segmentación precisa.' },
-            { id: 16, name: 'Faster R-CNN', type: 'image', task: 'detection', description: 'Modelo de detección de objetos preciso y popular en visión por computador.' },
+        async function loadModels() {
+        try {
+            const response = await fetch('/get-models');
+            const data = await response.json();
+            console.log(data);
+            models = data;
+            renderModels(models);
+        } catch (error) {
+            console.error('Error cargando JSON:', error);
+        }
+        }
 
-            // AUDIO
-            { id: 17, name: 'Whisper', type: 'audio', task: 'transcription', description: 'Modelo de OpenAI para transcripción automática y multilingüe de audio.' },
-            { id: 18, name: 'WaveNet', type: 'audio', task: 'generation', description: 'Modelo generativo para síntesis de voz realista.' },
-            { id: 19, name: 'DeepSpeech', type: 'audio', task: 'recognition', description: 'Sistema de reconocimiento automático de voz desarrollado por Mozilla.' },
-            { id: 20, name: 'YAMNet', type: 'audio', task: 'classification', description: 'Modelo basado en MobileNet para clasificar sonidos ambientales.' },
-            { id: 21, name: 'Jukebox', type: 'audio', task: 'generation', description: 'Modelo generativo de OpenAI para creación de música con voz y letra.' },
-            { id: 22, name: 'HuBERT', type: 'audio', task: 'transcription', description: 'Modelo auto-supervisado para extracción de características de voz.' },
+        loadModels();
 
-            // VIDEO
-            { id: 23, name: 'SlowFast', type: 'video', task: 'classification', description: 'Modelo que procesa diferentes frecuencias temporales para analizar vídeos.' },
-            { id: 24, name: 'I3D', type: 'video', task: 'classification', description: 'Modelo inflado 3D para reconocimiento de acciones en vídeos.' },
-            { id: 25, name: 'ST-GCN', type: 'video', task: 'detection', description: 'Modelo basado en grafos para análisis de acciones humanas en vídeos.' },
-            { id: 26, name: 'SiamMask', type: 'video', task: 'tracking', description: 'Modelo eficiente para seguimiento de objetos en vídeos en tiempo real.' },
-            { id: 27, name: 'Vid2Vid', type: 'video', task: 'generation', description: 'Modelo para generación de vídeo a partir de diferentes fuentes visuales.' },
-            { id: 28, name: 'Tracktor', type: 'video', task: 'tracking', description: 'Modelo de seguimiento basado en regresión de bounding boxes desde detecciones previas.' },
-            { id: 29, name: 'RT-DETR', type: 'video', task: 'detection', description: 'Detección de objetos en tiempo real basado en Transformer.' }
-        ];
 
 
         // Función para renderizar los modelos
@@ -321,11 +299,12 @@
             return models.filter(model => model.type === type && model.task === task);
         }
 
-        function onClickSpan(type) {
+        function onClickSpanType(type) {
             const filteredModels = filterByType(type);
             renderModels(filteredModels);
         }
         function onClickSpan(task) {
+            console.log(task);
             const filteredModels = filterByTask(task);
             renderModels(filteredModels);
         }
@@ -343,16 +322,22 @@
         });
 
         // Funciones para entrenar y seleccionar modelos
-        function trainModel(modelId) {
-            alert(`Iniciando entrenamiento para el modelo ${modelId}`);
+        function trainModel(modelId) {    
+            const model = models.find(m => m.id === modelId);
+            console.log(model);
+            if (model) {
+                    window.location.href = `entrenamiento?model=${model.label}`;
+            }
+        
         }
 
         function selectModel(modelId) {
             alert(`Modelo ${modelId} seleccionado`);
         }
+        
 
         // Renderizar todos los modelos al cargar la página
-        renderModels(models);
+        // renderModels(models);
     </script>
 </body>
 </html>
