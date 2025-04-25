@@ -273,7 +273,7 @@
                     <h2>${dataset.name}</h2>
                     <p>${dataset.description}</p>
                     <button onclick="selectDataset(${dataset.id})">Seleccionar</button>
-                    <button onclick="trainDataset(${dataset.id})">Saber más</button>
+                    <button onclick="redirectContenidos(${dataset.id})">Saber más</button>
                 `;
                 datasetList.appendChild(datasetCard);
             });
@@ -320,8 +320,12 @@
         });
 
         // Funciones para entrenar y seleccionar modelos
-        function trainDataset(datasetId) {
-            alert(`Iniciando entrenamiento para el modelo ${datasetId}`);
+        function redirectContenidos(datasetId) {
+            const dataset = datasets.find(m => m.id === datasetId);
+            console.log(dataset);
+            if (dataset) {
+                window.location.href = `contenidos#datos`;
+            }
         }
 
         function selectDataset(datasetId) {
