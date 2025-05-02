@@ -647,6 +647,13 @@
             'transcription': 'Transcripción'
         };
 
+        const modelTypes = {
+            'text': 'Texto',
+            'image': 'Imagen',
+            'audio': 'Audio',
+            'video': 'Video'
+        };
+
         // Mapeo de formatos de exportación a extensiones
         const formatExtensions = {
             'tflite': '.tflite',
@@ -692,7 +699,7 @@
                 modelCard.innerHTML = `
                     <h2>${model.name}</h2>
                     <div class="model-info">
-                        <span class="tag">${model.type.charAt(0).toUpperCase() + model.type.slice(1)}</span>
+                        <span class="tag">${modelTypes[model.type]}</span>
                         <span class="tag">${taskNames[model.task]}</span>
                     </div>
                     <p>${model.description}</p>
