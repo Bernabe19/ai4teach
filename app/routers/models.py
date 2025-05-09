@@ -336,7 +336,7 @@ async def get_models():
 @router.get("/import-model")
 async def import_model(model_name: str):
     try:
-        file_path = Path(f"db/models/{model_name}.json")  # Ajusta esta ruta según tu estructura
+        file_path = Path(f"../data/usuarios/bernabe/{model_name}.h5")  # Ajusta esta ruta según tu estructura
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         return JSONResponse(content=data)
