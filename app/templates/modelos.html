@@ -306,7 +306,7 @@
                     </div>
                     <p>${model.description}</p>
                     <button onclick="trainModel(${model.id})">Entrenar</button>
-                    <button onclick="selectModel(${model.id})">Saber más</button>
+                    <button onclick="redirectContenidos(${model.id})">Saber más</button>
                 `;
                 modelList.appendChild(modelCard);
             });
@@ -363,8 +363,12 @@
         
         }
 
-        function selectModel(modelId) {
-            alert(`Modelo ${modelId} seleccionado`);
+        function redirectContenidos(modelId) {
+            const model = models.find(m => m.id === modelId);
+            console.log(model);
+            if (model) {
+                window.location.href = `contenidos#machine-learning`;
+            }
         }
         
 
