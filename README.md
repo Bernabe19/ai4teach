@@ -84,22 +84,22 @@ Abre directamente el archivo `login.html` ubicado en la carpeta `frontend` desde
 ```
 AI4Teach/
 │
-├── app
-│   ├── routers
-│   ├── static
-│   ├── templates
+├── app                   # Directorio principal 
+│   ├── routers/
+│   ├── static/
+│   ├── templates/
 │   └── main.py
 │
 ├── data/                 # Modelos-Datos-Usuarios
-│   ├── datasets/           # Lógica FastAPI
-│   ├── models/           # Modelos entrenados
-│   └── usuarios/            # Funciones auxiliares
+│   ├── datasets/           
+│   ├── models/           
+│   └── usuarios/
 │
 ├── start/                # Ejemplos para pruebas
 │   ├── cnn_model.h5        
 │   ├── download_datasets.py
 │   ├── download_models.py
-    ├── test_image.png
+│   ├── test_image.png
 │   └── test_model.py
 │
 ├── requirements.txt
