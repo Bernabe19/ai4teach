@@ -85,12 +85,12 @@ async def process_login(request: Request, response: Response):
                 response.set_cookie(key="usuario", value=username, httponly=True, secure=True)
                 return response
         
-        return templates.TemplateResponse("login.html", {"request": request, "login_failed": True})
+        return templates.TemplateResponse("login.html", {"request": request, "login_failed": True, "username": username})
 
 if __name__ == "__main__":
     uvicorn.run(
             "app.main:app",
-            host    = '0.0.0.0',
+            host    = '127.0.0.1', # 0.0.0.0
             port    = 8080, 
             reload  = True,
     )
