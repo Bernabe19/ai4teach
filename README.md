@@ -103,7 +103,8 @@ AI4Teach/
 │   └── test_model.py
 │
 ├── requirements.txt
-└── README.md
+├── README.md
+└── LICENSE
 ```
 
 ---
@@ -124,3 +125,8 @@ AI4Teach/
 - Despliegue en la nube con Azure AI (aprovechando convenios con Conselleria)
 - Sistema de gestión docente y de progreso del alumnado
 - Ranking colaborativo de modelos entre clases o centros
+
+## 📝 Licencia
+
+Este proyecto se publica bajo la Licencia MIT.
+Esto significa que cualquier persona puede usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar o vender copias de la aplicación, siempre que se mantenga el aviso de copyright original.
